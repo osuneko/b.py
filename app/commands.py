@@ -836,7 +836,12 @@ async def silence(ctx: Context) -> Optional[str]:
     if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
         return "Only developers can manage staff members."
 
+<<<<<<< HEAD
     if not (duration := timeparse(ctx.args[1])):
+=======
+    duration = timeparse(ctx.args[1])
+    if duration is None:
+>>>>>>> Changed cmyui's timespan stuff to pytimeparse
         return "Invalid timespan."
 
     reason = " ".join(ctx.args[2:])
@@ -1021,7 +1026,15 @@ async def shutdown(ctx: Context) -> Optional[str]:
         _signal = signal.SIGTERM
 
     if ctx.args:  # shutdown after a delay
+<<<<<<< HEAD
         if not (delay := timeparse(ctx.args[0])):
+=======
+        if not (r_match := regexes.SCALED_DURATION.match(ctx.args[0])):
+            return f"Invalid syntax: !{ctx.trigger} <delay> <msg ...>"
+
+        delay = timeparse(ctx.args[0])
+        if delay is None:
+>>>>>>> Changed cmyui's timespan stuff to pytimeparse
             return "Invalid timespan."
 
         if delay < 15:
