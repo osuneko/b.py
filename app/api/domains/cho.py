@@ -361,26 +361,27 @@ class StatsUpdateRequest(BasePacket):
 # TODO: these should probably be moved to the config.
 WELCOME_MSG = "\n".join(
     (
-        f"Welcome to cs0su!",
-        "If you need help around commands, use the command !help",
-        "Make sure to join our Discord: (Discord)[https://discord.gg/ShEQgUx]!",
-        "Enjoy your stay!",
+        f"~~~~~ Welcome to cs0su! ~~~~~",
+        "If you need help around commands, use the command !help.",
+        "Also make sure to join our (Discord)[https://discord.gg/fyRrzA8zm9]!",
+        "",
+        "Enjoy your stay and have fun!",
     ),
 )
 
 RESTRICTED_MSG = (
-    "Your account is currently in restricted mode! "
-    "If you believe this is a mistake, please join"
-    "our Discord server to appeal."
+    "Your account is currently restricted! "
+    "If you believe this that is a mistake, please join "
+    "our (Discord)[https://discord.gg/fyRrzA8zm9] server in order to appeal."
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
-    f"Welcome on cs0su!\n\nMake sure to join our Discord if you haven't yet to receive all kinds of updates around the server!",
+    f"Welcome on cs0su!\n\nMake sure to join our Discord if you haven't yet to receive all kinds of updates around the server!\n\nEnjoy your stay!",
 )
 
 OFFLINE_NOTIFICATION = app.packets.notification(
     "The server is currently running in offline mode; "
-    "some features will be unavailble.",
+    "some features will be unavailable.",
 )
 
 DELTA_90_DAYS = timedelta(days=90)
