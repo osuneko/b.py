@@ -87,7 +87,7 @@ async def bancho_http_handler():
             (
                 f"Running bancho.py v{app.settings.VERSION}",
                 f"Players online: {len(app.state.sessions.players) - 1}",
-                '<a href="https://github.com/osuAkatsuki/bancho.py">Source code</a>',
+                '<a href="https://github.com/cs0su/bancho.py">Source code</a>',
                 "",
                 f"<b>packets handled ({len(packets)})</b>",
                 "<br>".join([f"{p.name} ({p.value})" for p in packets]),
@@ -361,21 +361,21 @@ class StatsUpdateRequest(BasePacket):
 # TODO: these should probably be moved to the config.
 WELCOME_MSG = "\n".join(
     (
-        f"Welcome to {BASE_DOMAIN}.",
-        "To see a list of commands, use !help.",
-        "We have a public (Discord)[https://discord.gg/ShEQgUx]!",
-        "Enjoy the server!",
+        f"Welcome to cs0su!",
+        "If you need help around commands, use the command !help",
+        "Make sure to join our Discord: (Discord)[https://discord.gg/ShEQgUx]!",
+        "Enjoy your stay!",
     ),
 )
 
 RESTRICTED_MSG = (
-    "Your account is currently in restricted mode. "
-    "If you believe this is a mistake, or have waited a period "
-    "greater than 3 months, you may appeal via the form on the site."
+    "Your account is currently in restricted mode! "
+    "If you believe this is a mistake, please join"
+    "our Discord server to appeal."
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
-    f"Welcome back to {BASE_DOMAIN}!\nRunning bancho.py v{app.settings.VERSION}.",
+    f"Welcome on cs0su!\nake sure to join our Discord if you haven't yet to receive all kinds of updates around the server!",
 )
 
 OFFLINE_NOTIFICATION = app.packets.notification(

@@ -1,0 +1,68 @@
+[1mdiff --git a/ext/nginx.conf b/ext/nginx.conf[m
+[1mindex 649dacf..261e590 100644[m
+[1m--- a/ext/nginx.conf[m
+[1m+++ b/ext/nginx.conf[m
+[36m@@ -10,17 +10,18 @@[m [mupstream bancho {[m
+ # a.ppy.sh is used for osu! avatars[m
+ [m
+ server {[m
+[31m-	listen 443 ssl;[m
+[32m+[m[32m        listen 80;[m
+[32m+[m	[32m# listen 443 ssl;[m
+ [m
+ 	# XXX: you'll need to edit this to match your domain (mine's cmyui.xyz)[m
+[31m-	server_name ~^(?:c[e4]?|osu|a|b)\.cmyui\.xyz$;[m
+[32m+[m	[32mserver_name ~^(?:c[e4]?|osu|a|b)\.cs0su\.net$;[m
+ [m
+ 	# XXX: you'll need to edit this to match your certificate and key[m
+[31m-	ssl_certificate     /etc/letsencrypt/live/cmyui.xyz/fullchain.pem;[m
+[31m-	ssl_certificate_key /etc/letsencrypt/live/cmyui.xyz/privkey.pem;[m
+[32m+[m	[32m# ssl_certificate     /etc/letsencrypt/live/cmyui.xyz/fullchain.pem;[m
+[32m+[m	[32m# ssl_certificate_key /etc/letsencrypt/live/cmyui.xyz/privkey.pem;[m
+ [m
+ 	# TODO: further ssl configuration[m
+[31m-	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:@SECLEVEL=1";[m
+[32m+[m	[32m# ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:@SECLEVEL=1";[m
+ [m
+ 	location / {[m
+ 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;[m
+[36m@@ -32,21 +33,22 @@[m [mserver {[m
+ }[m
+ [m
+ server {[m
+[31m-	listen 443 ssl;[m
+[32m+[m[32m        listen 80;[m
+[32m+[m	[32m# listen 443 ssl;[m
+ [m
+ 	# XXX: you'll need to edit this to match your domain (mine's cmyui.xyz)[m
+[31m-	server_name assets.cmyui.xyz;[m
+[32m+[m	[32mserver_name assets.cs0su.net;[m
+ [m
+ 	# XXX: you'll need to edit this to match your certificate and key[m
+[31m-	ssl_certificate     /etc/letsencrypt/live/cmyui.xyz/fullchain.pem;[m
+[31m-	ssl_certificate_key /etc/letsencrypt/live/cmyui.xyz/privkey.pem;[m
+[32m+[m	[32m# ssl_certificate     /etc/letsencrypt/live/cmyui.xyz/fullchain.pem;[m
+[32m+[m	[32m# ssl_certificate_key /etc/letsencrypt/live/cmyui.xyz/privkey.pem;[m
+ [m
+ 	# TODO: further ssl configuration[m
+[31m-	ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:@SECLEVEL=1";[m
+[32m+[m	[32m# ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH:@SECLEVEL=1";[m
+ [m
+ 	location / {[m
+ 		default_type image/png;[m
+ 		# XXX: you'll need to edit this to match your bancho.py .data/assets directory[m
+[31m-		root /home/cmyui/programming/bancho.py/.data/assets/;[m
+[32m+[m		[32mroot /root/cs0su/.data/assets/;[m
+ 	}[m
+ }[m
+[1mdiff --git a/ext/phpmyadmin.conf b/ext/phpmyadmin.conf[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c28d215[m
+[1m--- /dev/null[m
+[1m+++ b/ext/phpmyadmin.conf[m
+[36m@@ -0,0 +1,4 @@[m
+[32m+[m[32mserver {[m
+[32m+[m[32m    listen 80;[m
+[32m+[m[32m    server_name admin.cs0su.net;[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
