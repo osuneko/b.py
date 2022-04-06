@@ -1319,19 +1319,19 @@ async def debug(ctx: Context) -> Optional[str]:
     app.settings.DEBUG = not app.settings.DEBUG
     return f"Toggled {'on' if app.settings.DEBUG else 'off'}."
 
-
 # NOTE: these commands will likely be removed
 #       with the addition of a good frontend.
 str_priv_dict = {
     "normal": Privileges.NORMAL,
     "verified": Privileges.VERIFIED,
     "whitelisted": Privileges.WHITELISTED,
-    "supporter": Privileges.SUPPORTER,
-    "premium": Privileges.PREMIUM,
-    "alumni": Privileges.ALUMNI,
-    "tournament": Privileges.TOURNAMENT,
+    "donator": Privileges.SUPPORTER,
+   # "supporter": Privileges.SUPPORTER,
+   # "premium": Privileges.PREMIUM,
+   # "alumni": Privileges.ALUMNI,
+   # "tournament": Privileges.TOURNAMENT,
     "nominator": Privileges.NOMINATOR,
-    "mod": Privileges.MODERATOR,
+    "moderator": Privileges.MODERATOR,
     "admin": Privileges.ADMINISTRATOR,
     "developer": Privileges.DEVELOPER,
 }
