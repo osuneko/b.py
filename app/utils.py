@@ -60,7 +60,7 @@ __all__ = (
 
 DATA_PATH = Path.cwd() / ".data"
 ACHIEVEMENTS_ASSETS_PATH = DATA_PATH / "assets/medals/client"
-DEFAULT_AVATAR_PATH = DATA_PATH / "avatars/default.jpg"
+DEFAULT_AVATAR_PATH = DATA_PATH / "avatars/default/1.jpg"
 DEBUG_HOOKS_PATH = Path.cwd() / "_testing/runtime.py"
 OPPAI_PATH = Path.cwd() / "oppai_ng"
 OLD_OPPAI_PATH = Path.cwd() / "oppai-ng"
