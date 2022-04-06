@@ -800,6 +800,13 @@ async def osuSubmitModularSelector(
             #    ),
             #)
 
+            if score.bmap.status == RankedStatus.Ranked or score.bmap.status == RankedStatus.Approved or score.bmap.status == RankedStatus.Qualified:
+                score.player.send_bot(f"[{score.mode!r}] You just got {performance} on {score.bmap.embed} +{score.mods!r}")
+                #misses = f"{score.nmiss}X"
+                #if score.perfect:
+                #    misses = "FC"
+                #score.player.send_bot(f"({score.bmap.status}) +{score.mods!r} {score.max_combo}/{score.bmap.max_combo}x {round(score.acc, 2)}% {misses}")
+
             if score.rank == 1 and not score.player.restricted:
                 # this is the new #1, post the play to #announce.
                 announce_chan = app.state.sessions.channels["#announce"]
