@@ -794,11 +794,11 @@ async def osuSubmitModularSelector(
             else:
                 performance = f"{score.pp:,.2f}pp"
 
-            score.player.enqueue(
-                app.packets.notification(
-                    f"You achieved #{score.rank}! ({performance})",
-                ),
-            )
+            #score.player.enqueue(
+            #    app.packets.notification(
+            #        f"Leaderboard spot gained!\n\nYou achieved #{score.rank} with {performance}!",
+            #    ),
+            #)
 
             if score.rank == 1 and not score.player.restricted:
                 # this is the new #1, post the play to #announce.
