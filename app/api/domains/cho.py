@@ -375,7 +375,7 @@ RESTRICTED_MSG = (
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
-    f"Welcome on cs0su!\nake sure to join our Discord if you haven't yet to receive all kinds of updates around the server!",
+    f"Welcome on cs0su!\n\nMake sure to join our Discord if you haven't yet to receive all kinds of updates around the server!",
 )
 
 OFFLINE_NOTIFICATION = app.packets.notification(
