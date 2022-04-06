@@ -1322,7 +1322,6 @@ async def debug(ctx: Context) -> Optional[str]:
     app.settings.DEBUG = not app.settings.DEBUG
     return f"Toggled {'on' if app.settings.DEBUG else 'off'}."
 
-
 # NOTE: these commands will likely be removed
 #       with the addition of a good frontend.
 str_priv_dict = {
