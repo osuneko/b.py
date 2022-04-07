@@ -5,7 +5,7 @@ from requests import HTTPError
 
 import app.settings
 from app.constants.privileges import Privileges
-from app.logging import log
+from app.logging import log, Ansi
 
 
 class DiscordOAuth:
