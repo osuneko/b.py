@@ -87,7 +87,7 @@ class DiscordOAuth:
                 | Privileges.ALUMNI,
             )
 
-        log(f"User {p} was linked to discord user {discord_id} ({discord_name}", Ansi.LCYAN)
+        log(f"User {p} was linked to discord user {discord_id} ({discord_name})", Ansi.LCYAN)
 
         p.send_bot(f"Your account was successfully linked and verified! ({discord_name})")
 
