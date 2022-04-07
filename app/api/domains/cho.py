@@ -566,7 +566,7 @@ async def login(
         return {
             "osu_token": "unknown-username",
             "response_body": (
-                app.packets.notification(f"{BASE_DOMAIN}: Unknown username")
+                app.packets.notification(f"The user {login_data['username']} could not be found.")
                 + app.packets.user_id(-1)
             ),
         }
@@ -594,7 +594,7 @@ async def login(
             return {
                 "osu_token": "incorrect-password",
                 "response_body": (
-                    app.packets.notification(f"{BASE_DOMAIN}: Incorrect password")
+                    app.packets.notification(f"The password is incorrect.")
                     + app.packets.user_id(-1)
                 ),
             }
@@ -603,7 +603,7 @@ async def login(
             return {
                 "osu_token": "incorrect-password",
                 "response_body": (
-                    app.packets.notification(f"{BASE_DOMAIN}: Incorrect password")
+                    app.packets.notification(f"The password is incorrect.")
                     + app.packets.user_id(-1)
                 ),
             }
