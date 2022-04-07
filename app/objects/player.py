@@ -234,6 +234,7 @@ class Player:
         "name",
         "safe_name",
         "pw_bcrypt",
+        "discord_id",
         "priv",
         "stats",
         "status",
@@ -284,6 +285,12 @@ class Player:
             self.pw_bcrypt: Optional[bytes] = extras["pw_bcrypt"]
         else:
             self.pw_bcrypt = None
+
+        if "discord_id" in extras:
+            self.discord_id = extras["discord_id"]
+        else:
+            self.discord_id = ""
+
 
         # generate a token if not given
         token = extras.get("token", None)
@@ -1165,4 +1172,12 @@ class Player:
                 recipient=self.name,
                 sender_id=bot.id,
             ),
+        )
+
+    def set_discord(self, id: str) -> None:
+        """Set's the discord id of the player."""
+
+        app.state.services.database.execute(
+            "UPDATE users SET discord_id = :discord_id WHERE id = :user_id",
+            {"discord_id": id, "user_id": self.id}
         )

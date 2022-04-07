@@ -184,6 +184,8 @@ cp .env.example .env
 
 # open the configuration file for editing
 nano .env
+
+If you are using the Discord OAuth feature, please make sure to add the redirect https://osu.your.domain/discord_oauth_callback to the redirects in your Discord application panel.
 ```
 
 ## congratulations! you just setup an osu! private server

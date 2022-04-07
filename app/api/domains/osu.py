@@ -56,6 +56,7 @@ from app.constants.mods import Mods
 from app.logging import Ansi
 from app.logging import log
 from app.logging import printc
+from app.oauth import DiscordOAuth
 from app.objects import models
 from app.objects.beatmap import Beatmap
 from app.objects.beatmap import ensure_local_osu_file
@@ -117,6 +118,42 @@ def authenticate_player_session(
 # POST /web/osu-osz2-bmsubmit-upload.php
 # GET /web/osu-osz2-bmsubmit-getid.php
 # GET /web/osu-get-beatmap-topic.php
+
+
+@router.get("/discord_oauth_callback")
+async def discordOAuthCallback(code: str, state: str):
+    if not app.settings.DISCORD_OAUTH_ENABLED:
+        return Response(
+                content=b"Discord OAuth is disabled.",
+                status_code=status.HTTP_403_FORBIDDEN,
+            )
+
+    errorcode = await DiscordOAuth.verify_user(code, state)
+    if errorcode is 1:
+        return Response(
+                content=b"Invalid session ID provided. Please try again.",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+    elif errorcode is 2:
+        return Response(
+                content=b"Invalid OAuth code. Please try again.",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+    elif errorcode is 3:
+        return Response(
+                content=b"Discord API call failed. Please try again!",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+    elif errorcode is 4:
+        return Response(
+                content=b"Your discord account is already linked to an account. Please use your persisting account as creating multiple accounts is not allowed!",
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+
+    return Response(
+        content=b"Verification successful. You can close this window now!",
+        status_code=status.HTTP_200_OK
+    )
 
 
 @router.post("/web/osu-error.php")
@@ -736,6 +773,13 @@ async def osuSubmitModularSelector(
     # we should update their activity no matter
     # what the result of the score submission is.
     score.player.update_latest_activity_soon()
+
+    # If the user is not verified using discord yet,
+    # ignore submitted scores
+    if not score.player.priv & Privileges.VERIFIED:
+        if score.status == SubmissionStatus.SUBMITTED or score.status == SubmissionStatus.BEST:
+            score.player.send_bot(f"Your score cannot be submitted because your account is not verified yet! Click (here)[{DiscordOAuth.get_link(score.player.id)}] to link your account with Discord.")
+        return b"error: no"
 
     # attempt to update their stats if their
     # gm/gm-affecting-mods change at all.
