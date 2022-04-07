@@ -39,6 +39,7 @@ from app.constants.privileges import Privileges
 from app.logging import Ansi
 from app.logging import log
 from app.logging import magnitude_fmt_time
+from app.oauth import DiscordOAuth
 from app.objects.beatmap import Beatmap
 from app.objects.beatmap import ensure_local_osu_file
 from app.objects.channel import Channel
@@ -368,6 +369,17 @@ WELCOME_MSG = "\n".join(
         "Enjoy your stay and have fun!",
     ),
 )
+WELCOME_MSG_OAUTH = "\n".join(
+    (
+        f"~~~~~ Welcome to cs0su! ~~~~~",
+        "If you need help around commands, use the command !help.",
+        "Also make sure to join our (Discord)[https://discord.gg/fyRrzA8zm9]!",
+        "NOTE: To submit scores on our server, we require you to link your Discord",
+        "account to our server. You can do that by clicking (here)[$OAUTH].",
+        "",
+        "Enjoy your stay and have fun!",
+    ),
+)
 
 RESTRICTED_MSG = (
     "Your account is currently restricted! "
@@ -543,7 +555,7 @@ async def login(
                 }
 
     user_info = await db_conn.fetch_one(
-        "SELECT id, name, priv, pw_bcrypt, country, "
+        "SELECT id, name, priv, discord_id, pw_bcrypt, country, "
         "silence_end, clan_id, clan_priv, api_key "
         "FROM users WHERE safe_name = :name",
         {"name": app.utils.make_safe_name(login_data["username"])},
@@ -838,29 +850,37 @@ async def login(
                     sender_id=msg["from_id"],
                 )
 
-        if not p.priv & Privileges.VERIFIED:
-            # this is the player's first login, verify their
-            # account & send info about the server/its usage.
-            await p.add_privs(Privileges.VERIFIED)
-
-            if p.id == 3:
-                # this is the first player registering on
-                # the server, grant them full privileges.
-                await p.add_privs(
-                    Privileges.STAFF
-                    | Privileges.NOMINATOR
-                    | Privileges.WHITELISTED
-                    | Privileges.TOURNAMENT
-                    | Privileges.DONATOR
-                    | Privileges.ALUMNI,
-                )
-
+        if app.settings.DISCORD_OAUTH_ENABLED:
             data += app.packets.send_message(
                 sender=app.state.sessions.bot.name,
-                msg=WELCOME_MSG,
+                msg=WELCOME_MSG_OAUTH.replace("$OAUTH", DiscordOAuth.get_link(p.id)),
                 recipient=p.name,
-                sender_id=app.state.sessions.bot.id,
+                sender_id=app.state.sessions.bot.id
             )
+        else:
+            if not p.priv & Privileges.VERIFIED:
+                # this is the player's first login, verify their
+                # account & send info about the server/its usage.
+                await p.add_privs(Privileges.VERIFIED)
+
+                if p.id == 3:
+                    # this is the first player registering on
+                    # the server, grant them full privileges.
+                    await p.add_privs(
+                        Privileges.STAFF
+                        | Privileges.NOMINATOR
+                        | Privileges.WHITELISTED
+                        | Privileges.TOURNAMENT
+                        | Privileges.DONATOR
+                        | Privileges.ALUMNI,
+                    )
+
+                data += app.packets.send_message(
+                    sender=app.state.sessions.bot.name,
+                    msg=WELCOME_MSG,
+                    recipient=p.name,
+                    sender_id=app.state.sessions.bot.id
+                )
 
     else:
         # player is restricted, one way data
