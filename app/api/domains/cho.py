@@ -850,7 +850,7 @@ async def login(
                     sender_id=msg["from_id"],
                 )
 
-        if app.settings.DISCORD_OAUTH_ENABLED:
+        if app.settings.DISCORD_OAUTH_ENABLED and not p.priv & Privileges.VERIFIED:
             data += app.packets.send_message(
                 sender=app.state.sessions.bot.name,
                 msg=WELCOME_MSG_OAUTH.replace("$OAUTH", DiscordOAuth.get_link(p.id)),
