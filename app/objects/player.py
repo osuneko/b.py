@@ -1173,11 +1173,3 @@ class Player:
                 sender_id=bot.id,
             ),
         )
-
-    def set_discord(self, id: str) -> None:
-        """Set's the discord id of the player."""
-
-        app.state.services.database.execute(
-            "UPDATE users SET discord_id = :discord_id WHERE id = :user_id",
-            {"discord_id": id, "user_id": self.id}
-        )
