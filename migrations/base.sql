@@ -291,7 +291,7 @@ create table users
 	name varchar(32) charset utf8 not null,
 	safe_name varchar(32) charset utf8 not null,
 	email varchar(254) not null,
-	discord_id varchar(18) not null,
+	discord_id varchar(18) default '' not null,
 	priv int default 1 not null,
 	pw_bcrypt char(60) not null,
 	country char(2) default 'xx' not null,
