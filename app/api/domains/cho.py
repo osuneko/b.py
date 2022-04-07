@@ -384,7 +384,7 @@ WELCOME_MSG_OAUTH = "\n".join(
 RESTRICTED_MSG = (
     "Your account is currently restricted! "
     "If you believe this that is a mistake, please join "
-    "our (Discord)[https://discord.gg/fyRrzA8zm9] server in order to appeal."
+    "our (Discord)[https://discord.gg/fyRrzA8zm9] server in order to appeal.\nReason for your restriction: $REASON"
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
@@ -898,7 +898,7 @@ async def login(
         data += app.packets.account_restricted()
         data += app.packets.send_message(
             sender=app.state.sessions.bot.name,
-            msg=RESTRICTED_MSG,
+            msg=RESTRICTED_MSG.replace("$REASON", await p.get_restriction_reason()),
             recipient=p.name,
             sender_id=app.state.sessions.bot.id,
         )
