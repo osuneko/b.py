@@ -58,9 +58,11 @@ async def get_avatar_osu(user_id: int) -> Response:
 def get_default_avatar(default = False) -> str:
     count = len(next(os.walk(DEFAULT_AVATARS_PATH))[2])
 
+    print(count)
+
     if default:
         return DEFAULT_AVATARS_PATH / "1.jpg"
 
-    index = random.randint(1, count + 1)
+    index = random.randint(1, count)
 
     return DEFAULT_AVATARS_PATH / f"{index}.jpg"
