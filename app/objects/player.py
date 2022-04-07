@@ -1037,6 +1037,14 @@ class Player:
                 if row["id"] == ach.id:
                     self.achievements.add(ach)
 
+    async def get_restriction_reason(self) -> str:
+        """Retrieve `self`'s restriction reason from the logs table."""
+        if not self.restricted:
+            return ""
+
+        row = await app.state.services.database.fetch_one("SELECT msg FROM `logs` WHERE `to` = :user_id and `action` = 'restrict' ORDER BY `time` DESC LIMIT 1", {"user_id": self.id})
+        return row["msg"]
+
     async def get_global_rank(self, mode: GameMode) -> int:
         if self.restricted:
             return 0
