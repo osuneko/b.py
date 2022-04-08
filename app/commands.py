@@ -856,7 +856,7 @@ async def silence(ctx: Context) -> Optional[str]:
     if reason in SHORTHAND_REASONS:
         reason = SHORTHAND_REASONS[reason]
 
-    await t.silence(ctx.player, duration, reason)
+    await t.silence(ctx.player, ctx.args[1], reason)
     return f"{t} was silenced."
 
 
