@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from enum import IntEnum
 from enum import unique
 from functools import cached_property
@@ -24,7 +24,7 @@ from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
 from app.constants.privileges import ClientPrivileges
 from app.constants.privileges import Privileges
-from app.discord import Webhook
+from app.discord import Webhook, Embed
 from app.logging import Ansi
 from app.logging import log
 from app.objects.channel import Channel
@@ -584,12 +584,15 @@ class Player:
         if "restricted" in self.__dict__:
             del self.restricted  # wipe cached_property
 
-        log_msg = f"{admin} restricted {self} for: {reason}."
-
-        log(log_msg, Ansi.LRED)
+        log(f"{admin} restricted {self} for: {reason}.", Ansi.LRED)
 
         if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
-            webhook = Webhook(webhook_url, content=log_msg)
+            embed = Embed(title="Restriction", timestamp=datetime.utcnow(), color=16711680)
+            embed.add_field("Restricted Player", self.name, True)
+            embed.add_field("Reason", reason, True)
+            embed.set_footer(text="Administration Tools")
+            embed.set_author(name=admin.name, icon_url=admin.avatar_url, url=admin.url)
+            webhook = Webhook(webhook_url, embeds=[embed])
             await webhook.post(app.state.services.http)
 
         if self.online:
@@ -630,7 +633,12 @@ class Player:
         log(log_msg, Ansi.LRED)
 
         if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
-            webhook = Webhook(webhook_url, content=log_msg)
+            embed = Embed(title="Unrestriction", timestamp=datetime.utcnow(), color=41216)
+            embed.add_field("Restricted Player", self.name, True)
+            embed.add_field("Reason", reason, True)
+            embed.set_footer(text="Administration Tools")
+            embed.set_author(name=admin.name, icon_url=admin.avatar_url, url=admin.url)
+            webhook = Webhook(webhook_url, embeds=[embed])
             await webhook.post(app.state.services.http)
 
         if self.online:
@@ -664,9 +672,19 @@ class Player:
         if self.match:
             self.leave_match()
 
-        log(f"Silenced {self}.", Ansi.LCYAN)
+        log(f"{admin} silenced {self} for: {reason}.", Ansi.LCYAN)
 
-    async def unsilence(self, admin: Player) -> None:
+        if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+            embed = Embed(title="Silence", timestamp=datetime.utcnow(), color=16711680)
+            embed.add_field("Silenced Player", self.name, True)
+            embed.add_field("Duration", duration, True)
+            embed.add_field("Reason", reason, True)
+            embed.set_footer(text="Administration Tools")
+            embed.set_author(name=admin.name, icon_url=admin.avatar_url, url=admin.url)
+            webhook = Webhook(webhook_url, embeds=[embed])
+            await webhook.post(app.state.services.http)
+
+    async def unsilence(self, admin: Player, reason: str) -> None:
         """Unsilence `self`, and log to sql."""
         self.silence_end = int(time.time())
 
@@ -678,14 +696,23 @@ class Player:
         await app.state.services.database.execute(
             "INSERT INTO logs "
             "(`from`, `to`, `action`, `msg`, `time`) "
-            "VALUES (:from, :to, :action, NULL, NOW())",
-            {"from": admin.id, "to": self.id, "action": "unsilence"},
+            "VALUES (:from, :to, :action, :reason, NOW())",
+            {"from": admin.id, "to": self.id, "reason": reason, "action": "unsilence"},
         )
 
         # inform the user's client
         self.enqueue(app.packets.silence_end(0))
 
-        log(f"Unsilenced {self}.", Ansi.LCYAN)
+        log(f"{admin} unsilenced {self}.", Ansi.LCYAN)
+
+        if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
+            embed = Embed(title="Unsilence", timestamp=datetime.utcnow(), color=41216)
+            embed.add_field("Silenced Player", self.name, True)
+            embed.add_field("Reason", reason, True)
+            embed.set_footer(text="Administration Tools")
+            embed.set_author(name=admin.name, icon_url=admin.avatar_url, url=admin.url)
+            webhook = Webhook(webhook_url, embeds=[embed])
+            await webhook.post(app.state.services.http)
 
     def join_match(self, m: Match, passwd: str) -> bool:
         """Attempt to add `self` to `m`."""
