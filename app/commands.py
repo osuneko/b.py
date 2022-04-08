@@ -587,6 +587,13 @@ async def request(ctx: Context) -> Optional[str]:
     if bmap.status != RankedStatus.Pending:
         return "Only pending maps may be requested for status change."
 
+    for b in bmap.set.maps:
+        if await app.state.services.database.fetch_one(
+            "SELECT 1 FROM map_requests WHERE map_id = :map_id AND active = 1",
+            {"map_id": b.id}
+        ):
+            return "A map from this mapset has already been requested! Our BNs will always check the full mapset of requested maps."
+
     await app.state.services.database.execute(
         "INSERT INTO map_requests "
         "(map_id, player_id, datetime, active) "
