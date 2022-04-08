@@ -1358,7 +1358,7 @@ async def givedonator(ctx: Context) -> Optional[str]:
     if seconds is None:
         return "Invalid timespan."
 
-    t.give_donator(seconds)
+    await t.give_donator(seconds)
     await app.state.services.database.execute(
         "INSERT INTO logs "
         "(`from`, `to`, `action`, `msg`, `time`) "
@@ -1427,6 +1427,12 @@ async def rmpriv(ctx: Context) -> Optional[str]:
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return "Could not find user."
+
+    if bits & Privileges.DONATOR:
+        await app.state.services.database.execute(
+            "UPDATE users SET donor_end = 0 WHERE id = :user_id",
+            {"user_id": t.id},
+        )
 
     await t.remove_privs(bits)
 
