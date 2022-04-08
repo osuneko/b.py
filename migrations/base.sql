@@ -297,6 +297,7 @@ create table users
 	country char(2) default 'xx' not null,
 	silence_end int default 0 not null,
 	donor_end int default 0 not null,
+	donator_votes int default 0 not null,
 	creation_time int default 0 not null,
 	latest_activity int default 0 not null,
 	clan_id int default 0 not null,

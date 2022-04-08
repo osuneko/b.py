@@ -474,7 +474,7 @@ async def login(
       username\npasswd_md5\nosu_version|utc_offset|display_city|client_hashes|pm_private\n
 
     Response format:
-      Packet 5 (userid), with ID:
+      Packet 5 (userid), with ID:I
       -1: authentication failed
       -2: old client
       -3: banned
