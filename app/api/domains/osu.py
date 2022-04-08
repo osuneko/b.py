@@ -12,6 +12,7 @@ from enum import IntEnum
 from enum import unique
 from functools import cache
 from pathlib import Path as SystemPath
+import socket
 from typing import Any
 from typing import Awaitable
 from typing import Callable
@@ -49,6 +50,7 @@ import app.packets
 import app.settings
 import app.state
 import app.utils
+from app._typing import IPAddress
 from app.constants import regexes
 from app.constants.clientflags import ClientFlags
 from app.constants.gamemodes import GameMode
@@ -118,6 +120,46 @@ def authenticate_player_session(
 # POST /web/osu-osz2-bmsubmit-upload.php
 # GET /web/osu-osz2-bmsubmit-getid.php
 # GET /web/osu-get-beatmap-topic.php
+
+
+@router.get("/topg_callback")
+async def topgCallback(p_resp: str, ip: str, request: Request):
+    ip = app.state.services.ip_resolver.get_ip(request.headers)
+    topg_ip = socket.gethostbyname("monitor.topg.org")
+
+    if ip != topg_ip:
+        log(f"Invalid topg_callback received with ip '{ip}'", Ansi.LRED)
+        return Response(
+            content=b"This endpoint can only be called from TopG.",
+            status_code=status.HTTP_403_FORBIDDEN
+        )
+
+    if not (t := await app.state.sessions.players.from_cache_or_sql(name=p_resp)):
+        log(f"Vote received from unknown user '{p_resp}'", Ansi.LCYAN)
+        return Response(
+            status_code=status.HTTP_200_OK
+        )
+
+    log(f"Vote received from user {t}", Ansi.LCYAN)
+
+    row = await app.state.services.database.fetch_one("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": t.id})
+    votes = row["donator_votes"] + 1
+
+    t.send_bot(f"~~~~~~~~~~~~~~~\nThank you for voting! ({votes}/10)\nVote 10 times to receive a free week of donator status! You can vote once per 12 hours.")
+    if(votes == 10): # 10 = needed amount of votes
+        log(f"{t} received 1 week of donator through voting", Ansi.LCYAN)
+        votes = 0
+        await t.give_donator(7 * 24 * 60 * 60)
+        t.send_bot("You reached 10 votes! One week for free donator status has been assigned to you.")
+
+    await app.state.services.database.execute(
+        "UPDATE users SET donator_votes = :votes WHERE id = :user_id",
+        {"votes": votes, "user_id" : t.id},
+    )
+
+    return Response(
+        status_code=status.HTTP_200_OK
+    )
 
 
 @router.get("/discord_oauth_callback")
