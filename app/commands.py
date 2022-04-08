@@ -790,7 +790,7 @@ async def notes(ctx: Context) -> Optional[str]:
         time_str = row["time"]
         note = row["msg"]
 
-        notes.append(f"[{time_str}] {action_str} {note} by {logger.name}")
+        notes.append(f"[{time_str}] {action_str} '{note}' by {logger.name}")
 
     return "\n".join(notes)
 
