@@ -750,6 +750,7 @@ ACTION_STRINGS = {
     "silence": "Silenced for",
     "unsilence": "Unsilenced for",
     "note": "Note added:",
+    "give_donator": "Gave donator for",
 }
 
 
@@ -1355,17 +1356,14 @@ async def givedonator(ctx: Context) -> Optional[str]:
     if seconds is None:
         return "Invalid timespan."
 
-    #if t.donor_end < time.time():
-    seconds += int(time.time())
-    #else:
-    #    seconds += t.donor_end
-
+    t.give_donator(seconds)
     await app.state.services.database.execute(
-        "UPDATE users " "SET donor_end = :end ""WHERE id = :user_id",
-        {"end": seconds, "user_id": t.id},
+        "INSERT INTO logs "
+        "(`from`, `to`, `action`, `msg`, `time`) "
+        "VALUES (:from, :to, :action, :msg, NOW())",
+        {"from": ctx.player.id, "to": t.id, "action": "give_donator", "msg": ctx.args[1]},
     )
 
-    await t.add_privs(Privileges.SUPPORTER)
     return f"Added {ctx.args[1]} to the donator status of {t}."
 
 
