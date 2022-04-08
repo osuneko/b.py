@@ -49,6 +49,7 @@ DATADOG_API_KEY: Secret = config("DATADOG_API_KEY", cast=Secret)
 DATADOG_APP_KEY: Secret = config("DATADOG_APP_KEY", cast=Secret)
 
 DEBUG: bool = config("DEBUG", cast=bool, default=False)
+DISABLE_INGAME_REGISTRATION: bool = config("DISABLE_INGAME_REGISTRATION", cast=bool, default=False)
 REDIRECT_OSU_URLS: bool = config("REDIRECT_OSU_URLS", cast=bool, default=True)
 
 PP_CACHED_ACCURACIES: list[int] = [
