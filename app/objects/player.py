@@ -14,6 +14,8 @@ from typing import TYPE_CHECKING
 from typing import TypedDict
 from typing import Union
 
+from pytimeparse.timeparse import timeparse
+
 import databases.core
 
 import app.packets
@@ -646,8 +648,9 @@ class Player:
             # will simply relog them and refresh their app.state
             self.logout()
 
-    async def silence(self, admin: Player, duration: int, reason: str) -> None:
+    async def silence(self, admin: Player, duration_str: str, reason: str) -> None:
         """Silence `self` for `duration` seconds, and log to sql."""
+        duration = timeparse(duration_str)
         self.silence_end = int(time.time() + duration)
 
         await app.state.services.database.execute(
@@ -659,7 +662,7 @@ class Player:
             "INSERT INTO logs "
             "(`from`, `to`, `action`, `msg`, `time`) "
             "VALUES (:from, :to, :action, :msg, NOW())",
-            {"from": admin.id, "to": self.id, "action": "silence", "msg": reason},
+            {"from": admin.id, "to": self.id, "action": "silence", "msg": f"{reason} ({duration_str})"},
         )
 
         # inform the user's client.
@@ -672,12 +675,12 @@ class Player:
         if self.match:
             self.leave_match()
 
-        log(f"{admin} silenced {self} for: {reason}.", Ansi.LCYAN)
+        log(f"{admin} silenced {self} for: {reason} ({duration_str}).", Ansi.LCYAN)
 
         if webhook_url := app.settings.DISCORD_AUDIT_LOG_WEBHOOK:
             embed = Embed(title="Silence", timestamp=datetime.utcnow(), color=16711680)
             embed.add_field("Silenced Player", self.name, True)
-            embed.add_field("Duration", duration, True)
+            embed.add_field("Duration", duration_str, True)
             embed.add_field("Reason", reason, True)
             embed.set_footer(text="Administration Tools")
             embed.set_author(name=admin.name, icon_url=admin.avatar_url, url=admin.url)
