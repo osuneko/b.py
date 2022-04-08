@@ -129,22 +129,22 @@ async def discordOAuthCallback(code: str, state: str):
             )
 
     errorcode = await DiscordOAuth.verify_user(code, state)
-    if errorcode is 1:
+    if errorcode == 1:
         return Response(
                 content=b"Invalid session ID provided. Please try again.",
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
-    elif errorcode is 2:
+    elif errorcode == 2:
         return Response(
                 content=b"Invalid OAuth code. Please try again.",
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
-    elif errorcode is 3:
+    elif errorcode == 3:
         return Response(
                 content=b"Discord API call failed. Please try again!",
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-    elif errorcode is 4:
+    elif errorcode == 4:
         return Response(
                 content=b"Your discord account is already linked to an account. Please use your persisting account as creating multiple accounts is not allowed!",
                 status_code=status.HTTP_401_UNAUTHORIZED,
