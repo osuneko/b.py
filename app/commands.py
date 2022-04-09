@@ -207,7 +207,13 @@ async def vote(ctx: Context) -> Optional[str]:
     return f"Vote {app.settings.VOTES_FOR_DONATOR - votes} more times to receive one free week of donator status! ({votes}/{app.settings.VOTES_FOR_DONATOR})\nClick (here)[{app.settings.VOTE_LINK}-{ctx.player.name}] to get to the voting page."
 
 
+@command(Privileges.NORMAL)
+async def discord(ctx: Context) -> Optional[str]:
+    """Gives the discord invite link."""
+    if app.settings.DISCORD_INVITE == "":
+        return "This server does not have a discord invite link specified."
 
+    return f"Click (here)[{app.settings.DISCORD_INVITE}] to join our Discord! If you need help with anything server-related, please use the #help channel."
 
 
 @command(Privileges.NORMAL)
