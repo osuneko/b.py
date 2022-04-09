@@ -127,7 +127,7 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
     ip = app.state.services.ip_resolver.get_ip(request.headers)
     topg_ip = socket.gethostbyname("monitor.topg.org")
 
-    if ip != topg_ip:
+    if str(ip) != str(topg_ip):
         log(f"Invalid topg_callback received with ip '{ip}'", Ansi.LRED)
         return Response(
             content=b"This endpoint can only be called from TopG.",
