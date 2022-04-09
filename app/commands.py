@@ -196,6 +196,18 @@ async def _help(ctx: Context) -> Optional[str]:
 
 
 @command(Privileges.NORMAL)
+async def vote(ctx: Context) -> Optional[str]:
+    """Gives status about your vote progress and the vote link."""
+    if app.settings.VOTE_LINK == "":
+        return "This server does not have a voting page."
+
+    row = await app.state.services.database.fetch_one("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": ctx.player.id})
+    votes = row["donator_votes"]
+
+    return f"Vote {app.settings.VOTES_FOR_DONATOR - votes} more times to receive one free week of donator status! ({votes}/{app.settings.VOTES_FOR_DONATOR})\nClick (here)[{app.settings.VOTE_LINK}-{ctx.player.name}] to get to the voting page."
+
+
+@command(Privileges.NORMAL)
 async def roll(ctx: Context) -> Optional[str]:
     """Roll an n-sided die where n is the number you write (100 default)."""
     if ctx.args and ctx.args[0].isdecimal():

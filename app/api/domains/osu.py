@@ -145,12 +145,12 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
     row = await app.state.services.database.fetch_one("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": t.id})
     votes = row["donator_votes"] + 1
 
-    t.send_bot(f"~~~~~~~~~~~~~~~\nThank you for voting! ({votes}/10)\nVote 10 times to receive a free week of donator status! You can vote once per 12 hours.")
-    if(votes == 10): # 10 = needed amount of votes
+    t.send_bot(f"~~~~~~~~~~~~~~~\nThank you for voting! ({votes}/10)\nVote {app.settings.VOTES_FOR_DONATOR} times to receive a free week of donator status! You can vote once per 12 hours.")
+    if(votes >= app.settings.VOTES_FOR_DONATOR):
         log(f"{t} received 1 week of donator through voting", Ansi.LCYAN)
         votes = 0
         await t.give_donator(7 * 24 * 60 * 60)
-        t.send_bot("You reached 10 votes! One week for free donator status has been assigned to you.")
+        t.send_bot(f"You reached {app.settings.VOTES_FOR_DONATOR} votes! One week for free donator status has been assigned to you.")
 
     await app.state.services.database.execute(
         "UPDATE users SET donator_votes = :votes WHERE id = :user_id",

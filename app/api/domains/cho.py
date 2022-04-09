@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import random
 import re
 import struct
 import time
@@ -925,6 +926,9 @@ async def login(
     )
 
     p.update_latest_activity_soon()
+
+    if(random.randint(0, 4) == 0):
+        p.send_bot("Dont forget to vote for us if you haven't already, we would greatly appreciate it!\nYou can vote every 12 hours and after 10 votes you get a free week of donator status.\nUse the !vote command to get more informations. Click here to get to the voting page.")
 
     return {"osu_token": p.token, "response_body": bytes(data)}
 
