@@ -363,18 +363,18 @@ class StatsUpdateRequest(BasePacket):
 # TODO: these should probably be moved to the config.
 WELCOME_MSG = "\n".join(
     (
-        f"~~~~~ Welcome to cs0su! ~~~~~",
+        "~~~~~ Welcome to cs0su! ~~~~~",
         "If you need help around commands, use the command !help.",
-        "Also make sure to join our (Discord)[https://discord.gg/fyRrzA8zm9]!",
+        f"Also make sure to join our $DISCORD!",
         "",
         "Enjoy your stay and have fun!",
     ),
 )
 WELCOME_MSG_OAUTH = "\n".join(
     (
-        f"~~~~~ Welcome to cs0su! ~~~~~",
+        "~~~~~ Welcome to cs0su! ~~~~~",
         "If you need help around commands, use the command !help.",
-        "Also make sure to join our (Discord)[https://discord.gg/fyRrzA8zm9]!",
+        f"Also make sure to join our $DISCORD!",
         "NOTE: To submit scores on our server, we require you to link your Discord",
         "account to our server. You can do that by clicking (here)[$OAUTH].",
         "",
@@ -385,7 +385,7 @@ WELCOME_MSG_OAUTH = "\n".join(
 RESTRICTED_MSG = (
     "Your account is currently restricted! "
     "If you believe this that is a mistake, please join "
-    "our (Discord)[https://discord.gg/fyRrzA8zm9] server in order to appeal.\nReason for your restriction: $REASON"
+    f"our $DISCORD server in order to appeal.\nReason for your restriction: $REASON"
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
@@ -854,7 +854,7 @@ async def login(
         if app.settings.DISCORD_OAUTH_ENABLED and not p.priv & Privileges.VERIFIED:
             data += app.packets.send_message(
                 sender=app.state.sessions.bot.name,
-                msg=WELCOME_MSG_OAUTH.replace("$OAUTH", DiscordOAuth.get_link(p.id)),
+                msg=WELCOME_MSG_OAUTH.replace("$OAUTH", DiscordOAuth.get_link(p.id)).replace("$DISCORD", f"(Discord)[{app.settings.DISCORD_INVITE}]" if app.settings.DISCORD_INVITE != "" else "Discord"),
                 recipient=p.name,
                 sender_id=app.state.sessions.bot.id
             )
@@ -878,7 +878,7 @@ async def login(
 
                 data += app.packets.send_message(
                     sender=app.state.sessions.bot.name,
-                    msg=WELCOME_MSG,
+                    msg=WELCOME_MSG.replace("$DISCORD", f"(Discord)[{app.settings.DISCORD_INVITE}]" if app.settings.DISCORD_INVITE != "" else "Discord"),
                     recipient=p.name,
                     sender_id=app.state.sessions.bot.id
                 )
@@ -899,7 +899,7 @@ async def login(
         data += app.packets.account_restricted()
         data += app.packets.send_message(
             sender=app.state.sessions.bot.name,
-            msg=RESTRICTED_MSG.replace("$REASON", await p.get_restriction_reason()),
+            msg=RESTRICTED_MSG.replace("$REASON", await p.get_restriction_reason()).replace("$DISCORD", f"(Discord)[{app.settings.DISCORD_INVITE}]" if app.settings.DISCORD_INVITE != "" else "Discord"),
             recipient=p.name,
             sender_id=app.state.sessions.bot.id,
         )

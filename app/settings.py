@@ -25,6 +25,7 @@ DISCORD_OAUTH_ENABLED: bool = config("DISCORD_OAUTH_ENABLED", default=False)
 
 DOMAIN: str = config("DOMAIN", default="cmyui.xyz")
 MIRROR_URL: str = config("MIRROR_URL", default="https://api.chimu.moe/v1")
+DISCORD_INVITE: str = config("DISCORD_INVITE", default="")
 
 VOTE_LINK: str = config("VOTE_LINK", default="")
 VOTES_FOR_DONATOR: Optional[int] = (
