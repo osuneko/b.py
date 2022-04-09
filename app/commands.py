@@ -207,6 +207,9 @@ async def vote(ctx: Context) -> Optional[str]:
     return f"Vote {app.settings.VOTES_FOR_DONATOR - votes} more times to receive one free week of donator status! ({votes}/{app.settings.VOTES_FOR_DONATOR})\nClick (here)[{app.settings.VOTE_LINK}-{ctx.player.name}] to get to the voting page."
 
 
+
+
+
 @command(Privileges.NORMAL)
 async def roll(ctx: Context) -> Optional[str]:
     """Roll an n-sided die where n is the number you write (100 default)."""
