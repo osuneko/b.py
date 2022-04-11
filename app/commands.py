@@ -196,27 +196,6 @@ async def _help(ctx: Context) -> Optional[str]:
 
 
 @command(Privileges.NORMAL)
-async def vote(ctx: Context) -> Optional[str]:
-    """Gives status about your vote progress and the vote link."""
-    if app.settings.VOTE_LINK == "":
-        return "This server does not have a voting page."
-
-    row = await app.state.services.database.fetch_one("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": ctx.player.id})
-    votes = row["donator_votes"]
-
-    return f"Vote {app.settings.VOTES_FOR_DONATOR - votes} more times to receive one free week of donator status! ({votes}/{app.settings.VOTES_FOR_DONATOR})\nClick (here)[{app.settings.VOTE_LINK}-{ctx.player.name}] to get to the voting page."
-
-
-@command(Privileges.NORMAL)
-async def discord(ctx: Context) -> Optional[str]:
-    """Gives the discord invite link."""
-    if app.settings.DISCORD_INVITE == "":
-        return "This server does not have a discord invite link specified."
-
-    return f"Click (here)[{app.settings.DISCORD_INVITE}] to join our Discord! If you need help with anything server-related, please use the #help channel."
-
-
-@command(Privileges.NORMAL)
 async def roll(ctx: Context) -> Optional[str]:
     """Roll an n-sided die where n is the number you write (100 default)."""
     if ctx.args and ctx.args[0].isdecimal():
@@ -606,14 +585,7 @@ async def request(ctx: Context) -> Optional[str]:
     bmap = ctx.player.last_np["bmap"]
 
     if bmap.status != RankedStatus.Pending:
-        return "Only pending/graveyarded maps may be requested for status change."
-
-    for b in bmap.set.maps:
-        if await app.state.services.database.fetch_one(
-            "SELECT 1 FROM map_requests WHERE map_id = :map_id AND active = 1",
-            {"map_id": b.id}
-        ):
-            return "A map from this mapset has already been requested! Our BNs will always check the full mapset of requested maps."
+        return "Only pending maps may be requested for status change."
 
     await app.state.services.database.execute(
         "INSERT INTO map_requests "
@@ -771,25 +743,24 @@ ACTION_STRINGS = {
     "silence": "Silenced for",
     "unsilence": "Unsilenced for",
     "note": "Note added:",
-    "give_donator": "Gave donator for",
 }
 
 
 @command(Privileges.MODERATOR, hidden=True)
 async def notes(ctx: Context) -> Optional[str]:
     """Retrieve the logs of a specified player by name."""
-    if len(ctx.args) < 1 or len(ctx.args) > 2 or (len(ctx.args) == 2 and not ctx.args[1].isdecimal()):
-        return "Invalid syntax: !notes <name> [days back]"
+    if len(ctx.args) != 2 or not ctx.args[1].isdecimal():
+        return "Invalid syntax: !notes <name> <days_back>"
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
 
-    days = int(ctx.args[1]) if len(ctx.args) == 2 else 365
+    days = int(ctx.args[1])
 
     if days > 365:
         return "Please contact a developer to fetch >365 day old information."
     elif days <= 0:
-        return "Invalid syntax: !notes <name> <days back>"
+        return "Invalid syntax: !notes <name> <days_back>"
 
     res = await app.state.services.database.fetch_all(
         "SELECT `action`, `msg`, `time`, `from` "
@@ -812,7 +783,7 @@ async def notes(ctx: Context) -> Optional[str]:
         time_str = row["time"]
         note = row["msg"]
 
-        notes.append(f"[{time_str}] {action_str} '{note}' by {logger.name}")
+        notes.append(f"[{time_str}] {action_str} {note} by {logger.name}")
 
     return "\n".join(notes)
 
@@ -865,12 +836,7 @@ async def silence(ctx: Context) -> Optional[str]:
     if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
         return "Only developers can manage staff members."
 
-<<<<<<< HEAD
     if not (duration := timeparse(ctx.args[1])):
-=======
-    duration = timeparse(ctx.args[1])
-    if duration is None:
->>>>>>> Changed cmyui's timespan stuff to pytimeparse
         return "Invalid timespan."
 
     reason = " ".join(ctx.args[2:])
@@ -878,15 +844,15 @@ async def silence(ctx: Context) -> Optional[str]:
     if reason in SHORTHAND_REASONS:
         reason = SHORTHAND_REASONS[reason]
 
-    await t.silence(ctx.player, ctx.args[1], reason)
+    await t.silence(ctx.player, duration, reason)
     return f"{t} was silenced."
 
 
 @command(Privileges.MODERATOR, hidden=True)
 async def unsilence(ctx: Context) -> Optional[str]:
     """Unsilence a specified player."""
-    if len(ctx.args) < 2:
-        return "Invalid syntax: !unsilence <name> <reason>"
+    if len(ctx.args) != 1:
+        return "Invalid syntax: !unsilence <name>"
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return f'"{ctx.args[0]}" not found.'
@@ -897,7 +863,7 @@ async def unsilence(ctx: Context) -> Optional[str]:
     if t.priv & Privileges.STAFF and not ctx.player.priv & Privileges.DEVELOPER:
         return "Only developers can manage staff members."
 
-    await t.unsilence(ctx.player, " ".join(ctx.args[1:]))
+    await t.unsilence(ctx.player)
     return f"{t} was unsilenced."
 
 
@@ -1055,15 +1021,7 @@ async def shutdown(ctx: Context) -> Optional[str]:
         _signal = signal.SIGTERM
 
     if ctx.args:  # shutdown after a delay
-<<<<<<< HEAD
         if not (delay := timeparse(ctx.args[0])):
-=======
-        if not (r_match := regexes.SCALED_DURATION.match(ctx.args[0])):
-            return f"Invalid syntax: !{ctx.trigger} <delay> <msg ...>"
-
-        delay = timeparse(ctx.args[0])
-        if delay is None:
->>>>>>> Changed cmyui's timespan stuff to pytimeparse
             return "Invalid timespan."
 
         if delay < 15:
@@ -1377,16 +1335,17 @@ async def givedonator(ctx: Context) -> Optional[str]:
     if seconds is None:
         return "Invalid timespan."
 
-    t.send_bot(f"You just received the donator status from {ctx.player.name} for {ctx.args[1]}!")
+    #if t.donor_end == 0:
+    seconds += int(time.time())
+    #else:
+    #    seconds += t.donor_end
 
-    await t.give_donator(seconds)
     await app.state.services.database.execute(
-        "INSERT INTO logs "
-        "(`from`, `to`, `action`, `msg`, `time`) "
-        "VALUES (:from, :to, :action, :msg, NOW())",
-        {"from": ctx.player.id, "to": t.id, "action": "give_donator", "msg": ctx.args[1]},
+        "UPDATE users " "SET donor_end = :end ""WHERE id = :user_id",
+        {"end": seconds, "user_id": t.id},
     )
 
+    await t.add_privs(Privileges.SUPPORTER)
     return f"Added {ctx.args[1]} to the donator status of {t}."
 
 
@@ -1425,9 +1384,6 @@ async def addpriv(ctx: Context) -> Optional[str]:
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return "Could not find user."
 
-    if bits & Privileges.DONATOR:
-        return "Please use the !givedonator command to assign players the donator privileges."
-
     await t.add_privs(bits)
     return f"Updated {t}'s privileges."
 
@@ -1448,12 +1404,6 @@ async def rmpriv(ctx: Context) -> Optional[str]:
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return "Could not find user."
-
-    if bits & Privileges.DONATOR:
-        await app.state.services.database.execute(
-            "UPDATE users SET donor_end = 0 WHERE id = :user_id",
-            {"user_id": t.id},
-        )
 
     await t.remove_privs(bits)
 
