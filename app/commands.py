@@ -1358,6 +1358,8 @@ async def givedonator(ctx: Context) -> Optional[str]:
     if seconds is None:
         return "Invalid timespan."
 
+    t.send_bot(f"You just received the donator status from {ctx.player.name} for {ctx.args[1]}!")
+
     await t.give_donator(seconds)
     await app.state.services.database.execute(
         "INSERT INTO logs "
