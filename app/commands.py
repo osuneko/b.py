@@ -326,7 +326,7 @@ async def maplink(ctx: Context) -> Optional[str]:
 
     # gatari.pw & nerina.pw are pretty much the only
     # reliable mirrors i know of? perhaps beatconnect
-    return f"[https://osu.gatari.pw/d/{bmap.set_id} {bmap.full_name}]"
+    return f"[{app.settings.MIRROR_URL}/d/{bmap.set_id} {bmap.full_name}]"
 
 
 @command(Privileges.NORMAL, aliases=["last", "r"])
