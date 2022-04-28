@@ -900,6 +900,7 @@ async def user(ctx: Context) -> Optional[str]:
         f"until {timeago.format(p.donor_end)}" if p.donor_end > time.time() else "no"
     )
 
+    osu_version = p.client_details.osu_version.date if hasattr(p.client_details, "osu_version") else "Unknown"
     return "\n".join(
         (
             f'[{"Bot" if p.bot_client else "Player"}] {p.full_name} ({p.id})',
