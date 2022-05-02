@@ -561,13 +561,13 @@ class Beatmap:
     async def fetch_star_rating(self, mods: Mods) -> Optional[str]:
         mods = mods.__repr__()
         mods = [ mods[i:i+2] for i in range(0, len(mods), 2) ]
-        body = {
+        data = {
             "beatmap_id": self.id,
             "ruleset_id": self.mode,
             "mods": [ {"acronym": mod} for mod in mods ]
         }
         
-        with app.state.services.http.get("https://osu.ppy.sh/difficulty-rating", body=body) as resp:
+        async with app.state.services.http.post("https://osu.ppy.sh/difficulty-rating", data=data) as resp:
             return await resp.text()
 
 class BeatmapSet:
