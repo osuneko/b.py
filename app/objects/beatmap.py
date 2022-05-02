@@ -17,6 +17,7 @@ import app.settings
 import app.state
 import app.utils
 from app.constants.gamemodes import GameMode
+from app.constants.mods import Mods
 from app.logging import Ansi
 from app.logging import log
 from app.utils import escape_enum
@@ -557,6 +558,17 @@ class Beatmap:
 
         return row["rating"]
 
+    async def fetch_star_rating(self, mods: Mods) -> Optional[str]:
+        mods = mods.__repr__()
+        mods = [ mods[i:i+2] for i in range(0, len(mods), 2) ]
+        body = {
+            "beatmap_id": self.id,
+            "ruleset_id": self.mode,
+            "mods": [ {"acronym": mod} for mod in mods ]
+        }
+        
+        with app.state.services.http.get("https://osu.ppy.sh/difficulty-rating", body=body) as resp:
+            return await resp.text()
 
 class BeatmapSet:
     """A class to represent an osu! beatmap set.
