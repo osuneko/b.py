@@ -559,7 +559,7 @@ class Beatmap:
 
         return row["rating"]
 
-    def fetch_star_rating(self, mods: Mods) -> Optional[str]:
+    def fetch_star_rating(self, mods: Mods) -> Optional[float]:
         mods = mods.__repr__()
         mods = [ mods[i:i+2] for i in range(0, len(mods), 2) ]
 
