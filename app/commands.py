@@ -896,8 +896,9 @@ async def user(ctx: Context) -> Optional[str]:
         last_np = None
 
     osu_version = p.client_details.osu_version.date if p.online else "Unknown"
+    p.send_bot(f"{p.donor_end}")
     donator_info = (
-        f"until {timeago.format(p.donor_end)}" if p.donor_end > time.time() else "no"
+        f"True (ends {timeago.format(p.donor_end)})" if p.priv & Privileges.DONATOR else "False"
     )
 
     osu_version = p.client_details.osu_version.date if hasattr(p.client_details, "osu_version") else "Unknown"
@@ -1368,7 +1369,7 @@ str_priv_dict = {
 }
 
 
-@command(Privileges.DEVELOPER, hidden=True)
+@command(Privileges.ADMINISTRATOR, hidden=True)
 async def addpriv(ctx: Context) -> Optional[str]:
     """Set privileges for a specified player (by name)."""
     if len(ctx.args) < 2:
