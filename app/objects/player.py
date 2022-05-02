@@ -561,6 +561,22 @@ class Player:
             # if they're online, send a packet
             # to update their client-side privileges
             self.enqueue(app.packets.bancho_privileges(self.bancho_priv))
+            
+    async def give_donator(self, _time: int) -> None:
+        """Gives `self` donator for `_time`."""
+        await self.add_privs(Privileges.DONATOR)
+        
+        if self.donor_end > time.time():
+            _time += time.time()
+        else:
+            _time += self.donor_end
+
+        await app.state.services.database.execute(
+            "UPDATE users SET donor_end = :end "
+            "WHERE id = :uid",
+            {"end": _time, "uid", self.id}
+        )
+        self.donor_end = _time
 
     async def restrict(self, admin: Player, reason: str) -> None:
         """Restrict `self` for `reason`, and log to sql."""

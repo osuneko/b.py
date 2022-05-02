@@ -128,7 +128,7 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
     topg_ip = socket.gethostbyname("monitor.topg.org")
 
     if str(ip) != str(topg_ip):
-        log(f"Invalid topg_callback received with ip '{ip}'", Ansi.LRED)
+        log(f"Received invalid TopG callback request from {ip}", Ansi.LRED)
         return Response(
             content=b"This endpoint can only be called from TopG.",
             status_code=status.HTTP_403_FORBIDDEN
@@ -136,20 +136,16 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=p_resp)):
         log(f"Vote received from unknown user '{p_resp}'", Ansi.LCYAN)
-        return Response(
-            status_code=status.HTTP_200_OK
-        )
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
 
-    log(f"Vote received from user {t}", Ansi.LCYAN)
+    log(f"Vote received from user {t}!", Ansi.LCYAN)
 
-    row = await app.state.services.database.fetch_one("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": t.id})
-    votes = row["donator_votes"] + 1
+    votes = (await app.state.services.database.fetch_val("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": t.id})) + 1
 
     t.send_bot(f"~~~~~~~~~~~~~~~\nThank you for voting! ({votes}/10)\nVote {app.settings.VOTES_FOR_DONATOR} times to receive a free week of donator status! You can vote once per 12 hours.")
-    if(votes >= app.settings.VOTES_FOR_DONATOR):
+    if votes % app.settings.VOTES_FOR_DONATOR == 0:
         log(f"{t} received 1 week of donator through voting", Ansi.LCYAN)
-        votes = 0
-        await t.give_donator(7 * 24 * 60 * 60)
+        await t.give_donator(604800)
         t.send_bot(f"You reached {app.settings.VOTES_FOR_DONATOR} votes! One week for free donator status has been assigned to you.")
 
     await app.state.services.database.execute(
@@ -157,9 +153,7 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
         {"votes": votes, "user_id" : t.id},
     )
 
-    return Response(
-        status_code=status.HTTP_200_OK
-    )
+    return Response(status_code=status.HTTP_200_OK)
 
 
 @router.get("/discord_oauth_callback")
