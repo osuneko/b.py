@@ -1227,16 +1227,3 @@ class Player:
                 sender_id=bot.id,
             ),
         )
-
-    async def give_donator(self, seconds: int) -> None:
-        # if t.donor_end < time.time():
-        seconds += int(time.time())
-        # else:
-        #    seconds += t.donor_end
-
-        await app.state.services.database.execute(
-            "UPDATE users SET donor_end = :end WHERE id = :user_id",
-            {"end": seconds, "user_id": self.id},
-        )
-
-        await self.add_privs(Privileges.SUPPORTER)
