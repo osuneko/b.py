@@ -53,6 +53,7 @@ async def _remove_expired_donation_privileges(interval: int) -> None:
             assert p is not None
 
             # TODO: perhaps make a `revoke_donor` method?
+            p.donor_end = 0
             await p.remove_privs(Privileges.DONATOR)
             await app.state.services.database.execute(
                 "UPDATE users SET donor_end = 0 WHERE id = :id",
