@@ -559,11 +559,16 @@ class Beatmap:
 
         return row["rating"]
 
-    def fetch_star_rating(self, mods: Mods) -> Optional[float]:
+    def calc_star_rating(self, mods: Mods) -> float:
         mods = mods.__repr__()
         mods = [ mods[i:i+2] for i in range(0, len(mods), 2) ]
 
-        _dict = calculateStarRating(filepath=str(BEATMAPS_PATH / f"{self.id}.osu"), mods=mods)
+        try:
+            _dict = calculateStarRating(filepath=str(BEATMAPS_PATH / f"{self.id}.osu"), mods=mods)
+        except Exception as err:
+            log(f"There was an error while calculating star rating!\n\n{err}", Ansi.LRED)
+            return 0.0
+
 
         return list(_dict.values())[0]
         
