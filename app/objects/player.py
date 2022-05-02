@@ -574,7 +574,7 @@ class Player:
         await app.state.services.database.execute(
             "UPDATE users SET donor_end = :end "
             "WHERE id = :uid",
-            {"end": _time, "uid", self.id}
+            {"end": _time, "uid": self.id}
         )
         self.donor_end = _time
 
