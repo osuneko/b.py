@@ -1405,19 +1405,8 @@ async def givedonator(ctx: Context) -> Optional[str]:
 
     if not (timespan := timeparse(ctx.args[1])):
         return "Invalid timespan."
-
-    if t.donor_end < time.time():
-        timespan += int(time.time())
-    else:
-        timespan += t.donor_end
-
-    t.donor_end = timespan
-    await app.state.services.database.execute(
-        "UPDATE users SET donor_end = :end WHERE id = :user_id",
-        {"end": timespan, "user_id": t.id},
-    )
     
-    await t.add_privs(Privileges.SUPPORTER)
+    await t.give_donator(timespan)
 
     return f"Donator status of {t} will end {timeago.format(timespan)}."
 
