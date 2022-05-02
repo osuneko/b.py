@@ -566,7 +566,7 @@ class Beatmap:
         try:
             _dict = calculateStarRating(filepath=str(BEATMAPS_PATH / f"{self.id}.osu"), mods=mods)
         except Exception as err:
-            log(f"There was an error while calculating star rating!\n\n{err}", Ansi.LRED)
+            log(f"There was an error while calculating star rating! (Map ID: {self.id})\n\n{err}", Ansi.LRED)
             return 0.0
 
 
