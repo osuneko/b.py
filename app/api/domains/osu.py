@@ -1890,7 +1890,7 @@ async def register_account(
     errors: Mapping[str, list[str]] = defaultdict(list)
 
     if app.settings.DISABLE_INGAME_REGISTRATION:
-        errors["password"].append("The in-game registration is disabled.")
+        errors["password"].append("The in-game registration is disabled. Please try to register on the website.")
         errors = {k: ["\n".join(v)] for k, v in errors.items()}
         errors_full = {"form_error": {"user": errors}}
         return ORJSONResponse(
