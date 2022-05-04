@@ -159,36 +159,36 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
 @router.get("/discord_oauth_callback")
 async def discordOAuthCallback(code: str, state: str):
     if not app.settings.DISCORD_OAUTH_ENABLED:
-        return Response(
-                content=b"Discord OAuth is disabled.",
-                status_code=status.HTTP_403_FORBIDDEN,
+        return RedirectResponse(
+                url=f"/verification_failed?error=Discord OAuth is disabled.",
+                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             )
 
-    errorcode = await DiscordOAuth.verify_user(code, state)
+    errorcode, name, discord_id, avatar_id = await DiscordOAuth.verify_user(code, state)
     if errorcode == 1:
-        return Response(
-                content=b"Invalid session ID provided. Please try again.",
-                status_code=status.HTTP_401_UNAUTHORIZED,
+        return RedirectResponse(
+                url=f"https://cs0su.net/verification_failed?error=Invalid session ID provided.",
+                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             )
     elif errorcode == 2:
-        return Response(
-                content=b"Invalid OAuth code. Please try again.",
-                status_code=status.HTTP_401_UNAUTHORIZED,
+        return RedirectResponse(
+                url=f"/verification_failed?error=Invalid OAuth code.",
+                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             )
     elif errorcode == 3:
-        return Response(
-                content=b"Discord API call failed. Please try again!",
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        return RedirectResponse(
+                url=f"/verification_failed?error=Discord API call failed.",
+                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             )
     elif errorcode == 4:
-        return Response(
-                content=b"Your discord account is already linked to an account. Please use your persisting account as creating multiple accounts is not allowed!",
-                status_code=status.HTTP_401_UNAUTHORIZED,
+        return RedirectResponse(
+                url=f"/verification_failed?error=Your discord account is already linked to an account. Please use your persisting account as creating multiple accounts is not allowed!",
+                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             )
 
-    return Response(
-        content=b"Verification successful. You can close this window now!",
-        status_code=status.HTTP_200_OK
+    return RedirectResponse(
+        url=f"/verification_successful?name={name}&id={discord_id}&avatar={avatar_id}",
+        status_code=status.HTTP_307_TEMPORARY_REDIRECT
     )
 
 

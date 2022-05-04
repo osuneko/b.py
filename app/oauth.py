@@ -32,10 +32,19 @@ class DiscordOAuth:
             2 = wrong code
             3 = discord call error
             4 = discord account already in use
+
+            discord name
+            The discord name of the user or "" if an error occured
+
+            discord user id
+            The discord user id of the user or 0 if an error occured
+
+            discord avatar id
+            The discord avatar id of the user or 0 if an error occured
         """
 
         if not session_id in DiscordOAuth.session_ids:
-            return 1
+            return 1, "", 0, 0
 
 
         headers = { "Content-Type": "application/x-www-form-urlencoded" }
@@ -51,7 +60,7 @@ class DiscordOAuth:
         try:
             r.raise_for_status()
         except HTTPError:
-            return 2
+            return 2, "", 0, 0
 
         headers = { "Authorization": f"Bearer {r.json()['access_token']}" }
 
@@ -59,13 +68,14 @@ class DiscordOAuth:
         try:
             r.raise_for_status()
         except HTTPError:
-            return 3
+            return 3, "", 0, 0
 
-        discord_id = r.json()["id"]
         discord_name = f"{r.json()['username']}#{r.json()['discriminator']}"
+        discord_id = r.json()["id"]
+        avatar_id = r.json()["avatar"]
 
         if await app.state.services.database.fetch_one("SELECT 1 FROM users WHERE discord_id = :discord_id", {"discord_id": discord_id}):
-            return 4
+            return 4, "", 0, 0
 
         user_id = DiscordOAuth.session_ids[session_id]
         del DiscordOAuth.session_ids[session_id]
@@ -91,4 +101,4 @@ class DiscordOAuth:
 
         p.send_bot(f"Your account was successfully linked and verified! ({discord_name})")
 
-        return 0
+        return 0, discord_name, discord_id, avatar_id
