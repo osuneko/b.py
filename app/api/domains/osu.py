@@ -182,7 +182,7 @@ async def discordOAuthCallback(code: str, state: str):
             )
     elif errorcode == 4:
         return RedirectResponse(
-                url=f"/verification_failed?error=Your discord account is already linked to an account. Please use your persisting account as creating multiple accounts is not allowed!",
+                url=f"/verification_failed?error=Your discord account is already linked to an account. Creating multiple accounts is not allowed!",
                 status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             )
 
