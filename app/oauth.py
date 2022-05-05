@@ -101,4 +101,4 @@ class DiscordOAuth:
 
         p.send_bot(f"Your account was successfully linked and verified! ({discord_name})")
 
-        return 0, discord_name, discord_id, avatar_id
+        return 0, discord_name.replace("#", "%23").replace("", ""), discord_id, avatar_id
