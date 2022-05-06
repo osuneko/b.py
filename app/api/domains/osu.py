@@ -167,7 +167,7 @@ async def discordOAuthCallback(code: str, state: str):
     errorcode, name, discord_id, avatar_id = await DiscordOAuth.verify_user(code, state)
     if errorcode == 1:
         return RedirectResponse(
-                url=f"https://cs0su.net/verification_failed?error=Invalid session ID provided.",
+                url=f"/verification_failed?error=Invalid session ID provided.",
                 status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             )
     elif errorcode == 2:
