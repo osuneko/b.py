@@ -68,7 +68,9 @@ class GameMode(IntEnum):
 
     @functools.cached_property
     def as_vanilla(self) -> int:
-        if self.value & self.AUTOPILOT_OSU:
+        if self.value & self.VANILLA_CS0 or self.value & self.RELAX_CS0 or self.value & self.AUTOPILOT_CS0:
+            return 0
+        elif self.value & self.AUTOPILOT_OSU:
             return self.value - 8
         elif self.value & self.RELAX_OSU:
             return self.value - 4
