@@ -65,11 +65,11 @@ class GameMode(IntEnum):
 
         return cls(mode)
 
-    @functools.cached_property
+    @property
     def as_vanilla(self) -> int:
-        if self.value & self.AUTOPILOT_OSU:
+        if self.value in (10, 14):
             return self.value - 10
-        elif self.value & self.RELAX_OSU:
+        elif self.value in (5, 6, 7, 9):
             return self.value - 5
         else:
             return self.value
@@ -77,10 +77,10 @@ class GameMode(IntEnum):
     # i don't think we wanna cache this..?
     def as_cs0(self, bmap: Beatmap) -> int:
         if bmap.cs == 0:
-            if self.value & self.RELAX_OSU:
-                return self.RELAX_CS0
-            elif self.value & self.AUTOPILOT_OSU:
+            if self.value in (10, 14):
                 return self.AUTOPILOT_CS0
+            elif self.value in (5, 6, 7, 9):
+                return self.RELAX_CS0
             else:
                 return self.VANILLA_CS0
 

@@ -422,7 +422,7 @@ class Score:
         """Calculate the accuracy of our score."""
         mode_vn = self.mode.as_vanilla
 
-        if mode_vn == 0:  # osu!
+        if mode_vn in (0, 4):  # osu!
             total = self.n300 + self.n100 + self.n50 + self.nmiss
 
             if total == 0:

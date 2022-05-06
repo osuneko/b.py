@@ -455,6 +455,7 @@ class Player:
     @property
     def gm_stats(self) -> ModeData:
         """The player's stats in their currently selected mode."""
+        print(self.status.mode)
         return self.stats[self.status.mode]
 
     @cached_property

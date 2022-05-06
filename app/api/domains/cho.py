@@ -205,7 +205,11 @@ class ChangeAction(BasePacket):
         p.status.info_text = self.info_text
         p.status.map_md5 = self.map_md5
         p.status.mods = Mods(self.mods)
-        p.status.mode = GameMode(self.mode)
+        b = await Beatmap.from_md5(self.map_md5)
+        if b:
+            p.status.mode = b.mode.as_cs0(b)
+        else:
+            p.status.mode = GameMode(self.mode)
         p.status.map_id = self.map_id
 
         # broadcast it to all online players.
