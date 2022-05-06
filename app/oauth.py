@@ -93,7 +93,6 @@ class DiscordOAuth:
                 | Privileges.NOMINATOR
                 | Privileges.WHITELISTED
                 | Privileges.TOURNAMENT
-                | Privileges.DONATOR
                 | Privileges.ALUMNI,
             )
 
