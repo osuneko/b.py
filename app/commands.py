@@ -1331,33 +1331,6 @@ async def debug(ctx: Context) -> Optional[str]:
     return f"Toggled {'on' if app.settings.DEBUG else 'off'}."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
-async def givedonator(ctx: Context) -> Optional[str]:
-    """Gives donator to a specified player (by name) for a specified time, such as '3h5m'."""
-    if len(ctx.args) < 2:
-        return "Invalid syntax: !setdonator <name> <duration>"
-
-    if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
-        return "Could not find user."
-
-    seconds = timeparse(ctx.args[1])
-
-    if seconds is None:
-        return "Invalid timespan."
-
-    t.send_bot(f"You just received the donator status from {ctx.player.name} for {ctx.args[1]}!")
-
-    await t.give_donator(seconds)
-    await app.state.services.database.execute(
-        "INSERT INTO logs "
-        "(`from`, `to`, `action`, `msg`, `time`) "
-        "VALUES (:from, :to, :action, :msg, NOW())",
-        {"from": ctx.player.id, "to": t.id, "action": "give_donator", "msg": ctx.args[1]},
-    )
-
-    return f"Added {ctx.args[1]} to the donator status of {t}."
-
-
 # NOTE: these commands will likely be removed
 #       with the addition of a good frontend.
 str_priv_dict = {
@@ -1448,6 +1421,7 @@ async def givedonator(ctx: Context) -> Optional[str]:
         return "Invalid timespan."
     
     await t.give_donator(timespan)
+    t.send_bot(f"You just received the donator status from {ctx.player.name} for {ctx.args[1]}!")
 
     return f"Donator status of {t} will end {timeago.format(timespan)}."
 
