@@ -2031,9 +2031,9 @@ async def register_account(
                         5,  # rx!taiko
                         6,  # rx!catch
                         8,  # ap!std
-                        12,  # vn!std (cs0)
-                        13, # rx!std (cs0)
-                        14, # ap!std (cs0)
+                        12, # vn!cs0
+                        13, # rx!cs0
+                        14, # ap!cs0
                     )
                 ],
             )
