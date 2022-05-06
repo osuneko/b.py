@@ -39,19 +39,18 @@ class GameMode(IntEnum):
     VANILLA_TAIKO = 1
     VANILLA_CATCH = 2
     VANILLA_MANIA = 3
+    VANILLA_CS0 = 4
 
-    RELAX_OSU = 4
-    RELAX_TAIKO = 5
-    RELAX_CATCH = 6
-    RELAX_MANIA = 7  # unused
+    RELAX_OSU = 5
+    RELAX_TAIKO = 6
+    RELAX_CATCH = 7
+    RELAX_MANIA = 8  # unused
+    RELAX_CS0 = 9 
 
-    AUTOPILOT_OSU = 8
-    AUTOPILOT_TAIKO = 9  # unused
-    AUTOPILOT_CATCH = 10  # unused
-    AUTOPILOT_MANIA = 11  # unused
-    
-    VANILLA_CS0 = 12
-    RELAX_CS0 = 13
+    AUTOPILOT_OSU = 10
+    AUTOPILOT_TAIKO = 11  # unused
+    AUTOPILOT_CATCH = 12  # unused
+    AUTOPILOT_MANIA = 13  # unused
     AUTOPILOT_CS0 = 14
 
     @classmethod
@@ -60,20 +59,18 @@ class GameMode(IntEnum):
         mode = mode_vn
 
         if mods & Mods.AUTOPILOT:
-            mode += 8
+            mode += 10
         elif mods & Mods.RELAX:
-            mode += 4
+            mode += 5
 
         return cls(mode)
 
     @functools.cached_property
     def as_vanilla(self) -> int:
-        if self.value & self.VANILLA_CS0 or self.value & self.RELAX_CS0 or self.value & self.AUTOPILOT_CS0:
-            return 0
         elif self.value & self.AUTOPILOT_OSU:
-            return self.value - 8
+            return self.value - 10
         elif self.value & self.RELAX_OSU:
-            return self.value - 4
+            return self.value - 5
         else:
             return self.value
 

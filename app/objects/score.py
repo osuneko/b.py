@@ -366,7 +366,7 @@ class Score:
         """Calculate PP and star rating for our score."""
         mode_vn = self.mode.as_vanilla
 
-        if mode_vn in (0, 1, 2):
+        if mode_vn in (0, 1, 2, 4):
             score_args: ScoreDifficultyParams = {
                 "acc": self.acc,
                 "combo": self.max_combo,

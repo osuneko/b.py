@@ -445,7 +445,7 @@ def parse__with__command_args(
     # tried to balance complexity vs correctness for this function
     # TODO: it can surely be cleaned up further - need to rethink it?
 
-    if mode in (0, 1, 2):
+    if mode in (0, 1, 2, 4):
         if not args or len(args) > 4:
             return ParsingError("Invalid syntax: !with <acc/nmiss/combo/mods ...>")
 
@@ -488,7 +488,7 @@ def parse__with__command_args(
             "combo": combo,
             "nmiss": nmiss,
         }
-    else:  # mode == 4
+    else:  # mode == 5
         if not args or len(args) > 2:
             return ParsingError("Invalid syntax: !with <score/mods ...>")
 
@@ -543,7 +543,7 @@ async def _with(ctx: Context) -> Optional[str]:
     score_args: ScoreDifficultyParams = {}
 
     # include mode-specific fields
-    if mode_vn in (0, 1, 2):
+    if mode_vn in (0, 1, 2, 4):
         if (nmiss := command_args["nmiss"]) is not None:
             score_args["nmiss"] = nmiss
             msg_fields.append(f"{nmiss}m")
@@ -1228,7 +1228,7 @@ async def recalc(ctx: Context) -> Optional[str]:
         ):
             with OppaiWrapper() as ezpp:
                 ezpp.set_mode(0)  # TODO: other modes
-                for mode in (0, 4, 8):  # vn!std, rx!std, ap!std
+                for mode in (0, 5, 10):  # vn!std, rx!std, ap!std
                     # TODO: this should be using an async generator
                     for row in await score_select_conn.fetch_all(
                         "SELECT id, acc, mods, max_combo, nmiss "
@@ -1287,7 +1287,7 @@ async def recalc(ctx: Context) -> Optional[str]:
 
                     with OppaiWrapper() as ezpp:
                         ezpp.set_mode(0)  # TODO: other modes
-                        for mode in (0, 4, 8):  # vn!std, rx!std, ap!std
+                        for mode in (0, 5, 10):  # vn!std, rx!std, ap!std
                             # TODO: this should be using an async generator
                             for row in await score_select_conn.fetch_all(
                                 "SELECT id, acc, mods, max_combo, nmiss "

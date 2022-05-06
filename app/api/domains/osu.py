@@ -2027,12 +2027,12 @@ async def register_account(
                         1,  # vn!taiko
                         2,  # vn!catch
                         3,  # vn!mania
-                        4,  # rx!std
-                        5,  # rx!taiko
-                        6,  # rx!catch
-                        8,  # ap!std
-                        12, # vn!cs0
-                        13, # rx!cs0
+                        4,  # vn!cs0
+                        5,  # rx!std
+                        6,  # rx!taiko
+                        7,  # rx!catch
+                        9,  # rx!cs0
+                        10, # ap!std
                         14, # ap!cs0
                     )
                 ],

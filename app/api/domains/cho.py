@@ -190,12 +190,12 @@ class ChangeAction(BasePacket):
             if self.mode == 3:  # rx!mania doesn't exist
                 self.mods &= ~Mods.RELAX
             else:
-                self.mode += 4
+                self.mode += 5
         elif self.mods & Mods.AUTOPILOT:
             if self.mode in (1, 2, 3):  # ap!catch, taiko and mania don't exist
                 self.mods &= ~Mods.AUTOPILOT
             else:
-                self.mode += 8
+                self.mode += 10
 
         self.map_id = reader.read_i32()
 
@@ -1159,7 +1159,7 @@ class SendPrivateMessage(BasePacket):
                             else:
                                 mods = None
 
-                            if mode_vn in (0, 1, 2):
+                            if mode_vn in (0, 1, 2, 4):
                                 scores: list[ScoreDifficultyParams] = [
                                     {"acc": acc}
                                     for acc in app.settings.PP_CACHED_ACCURACIES
@@ -1177,7 +1177,7 @@ class SendPrivateMessage(BasePacket):
                                 scores=scores,
                             )
 
-                            if mode_vn in (0, 1, 2):
+                            if mode_vn in (0, 1, 2, 4):
                                 resp_msg = " | ".join(
                                     f"{acc}%: {result['performance']:,.2f}pp"
                                     for acc, result in zip(
