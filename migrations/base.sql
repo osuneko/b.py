@@ -170,7 +170,7 @@ create table map_requests
 create table performance_reports
 (
 	scoreid bigint(20) unsigned not null,
-	mod_mode enum('vanilla', 'relax', 'autopilot') default 'vanilla' not null,
+	mod_mode enum('vanilla', 'relax', 'autopilot', 'cs0') default 'vanilla' not null,
 	os varchar(64) not null,
 	fullscreen tinyint(1) not null,
 	fps_cap varchar(16) not null,
@@ -326,10 +326,13 @@ INSERT INTO stats (id, mode) VALUES (1, 0); # vn!std
 INSERT INTO stats (id, mode) VALUES (1, 1); # vn!taiko
 INSERT INTO stats (id, mode) VALUES (1, 2); # vn!catch
 INSERT INTO stats (id, mode) VALUES (1, 3); # vn!mania
-INSERT INTO stats (id, mode) VALUES (1, 4); # rx!std
-INSERT INTO stats (id, mode) VALUES (1, 5); # rx!taiko
-INSERT INTO stats (id, mode) VALUES (1, 6); # rx!catch
-INSERT INTO stats (id, mode) VALUES (1, 8); # ap!std
+INSERT INTO stats (id, mode) VALUES (1, 4); # vn!cs0
+INSERT INTO stats (id, mode) VALUES (1, 5); # rx!std
+INSERT INTO stats (id, mode) VALUES (1, 6); # rx!taiko
+INSERT INTO stats (id, mode) VALUES (1, 7); # rx!catch
+INSERT INTO stats (id, mode) VALUES (1, 9); # rx!cs0
+INSERT INTO stats (id, mode) VALUES (1, 10); # ap!vn
+INSERT INTO stats (id, mode) VALUES (1, 14); # ap!cs0
 
 
 # userid 2 is reserved for ppy in osu!, and the

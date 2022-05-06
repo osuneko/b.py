@@ -89,7 +89,7 @@ class Mods(IntFlag):
             self &= ~Mods.SUDDENDEATH  # PFSD
 
         # 2. remove mode-unique mods from incorrect gamemodes
-        if mode_vn != 0:  # osu! specific
+        if mode_vn != 0 and mode_vn != 4:  # osu! specific
             self &= ~OSU_SPECIFIC_MODS
 
         # ctb & taiko have no unique mods
@@ -98,7 +98,7 @@ class Mods(IntFlag):
             self &= ~MANIA_SPECIFIC_MODS
 
         # 3. mode-specific mod conflictions
-        if mode_vn == 0:
+        if mode_vn == 0 or mode_vn == 4:
             if self & Mods.AUTOPILOT:
                 if self & (Mods.SPUNOUT | Mods.RELAX):
                     self &= ~Mods.AUTOPILOT  # (SO|RX)AP

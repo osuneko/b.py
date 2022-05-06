@@ -502,7 +502,7 @@ async def osuSearchHandler(
     player: Player = Depends(authenticate_player_session(Query, "u", "h")),
     ranked_status: int = Query(..., alias="r", ge=0, le=8),
     query: str = Query(..., alias="q"),
-    mode: int = Query(..., alias="m", ge=-1, le=3),  # -1 for all
+    mode: int = Query(..., alias="m", ge=-1, le=4),  # -1 for all
     page_num: int = Query(..., alias="p"),
 ):
     if USING_CHIMU:
@@ -1231,7 +1231,7 @@ async def osuSubmitModularSelector(
 @router.get("/web/osu-getreplay.php")
 async def getReplay(
     player: Player = Depends(authenticate_player_session(Query, "u", "h")),
-    mode: int = Query(..., alias="m", ge=0, le=3),
+    mode: int = Query(..., alias="m", ge=0, le=4),
     score_id: int = Query(..., alias="c", min=0, max=9_223_372_036_854_775_807),
 ):
     score = await Score.from_sql(score_id)
@@ -1411,7 +1411,7 @@ async def getScores(
     leaderboard_type: int = Query(..., alias="v", ge=0, le=4),
     map_md5: str = Query(..., alias="c", min_length=32, max_length=32),
     map_filename: str = Query(..., alias="f"),  # TODO: regex?
-    mode_arg: int = Query(..., alias="m", ge=0, le=3),
+    mode_arg: int = Query(..., alias="m", ge=0, le=4),
     map_set_id: int = Query(..., alias="i", ge=-1, le=2_147_483_647),
     mods_arg: int = Query(..., alias="mods", ge=0, le=2_147_483_647),
     map_package_hash: str = Query(..., alias="h"),  # TODO: further validation
@@ -1433,12 +1433,12 @@ async def getScores(
         if mode_arg == 3:  # rx!mania doesn't exist
             mods_arg &= ~Mods.RELAX
         else:
-            mode_arg += 4
+            mode_arg += 5
     elif mods_arg & Mods.AUTOPILOT:
         if mode_arg in (1, 2, 3):  # ap!catch, taiko and mania don't exist
             mods_arg &= ~Mods.AUTOPILOT
         else:
-            mode_arg += 8
+            mode_arg += 10
 
     mods = Mods(mods_arg)
 
@@ -1587,7 +1587,7 @@ async def osuComment(
     map_id: int = Form(..., alias="b"),
     map_set_id: int = Form(..., alias="s"),
     score_id: int = Form(..., alias="r", ge=0, le=9_223_372_036_854_775_807),
-    mode_vn: int = Form(..., alias="m", ge=0, le=3),
+    mode_vn: int = Form(..., alias="m", ge=0, le=4),
     action: Literal["get", "post"] = Form(..., alias="a"),
     # only sent for post
     target: Optional[Literal["song", "map", "replay"]] = Form(None),

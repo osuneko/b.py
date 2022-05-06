@@ -222,7 +222,7 @@ def calculate_performances(
             for score in scores
         ]
 
-        if mode == 0:
+        if mode == 0 or mode == 4:
             results = calculate_performances_std(
                 osu_file_path=osu_file_path,
                 scores=std_taiko_catch_scores,

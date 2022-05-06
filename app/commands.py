@@ -1228,7 +1228,7 @@ async def recalc(ctx: Context) -> Optional[str]:
         ):
             with OppaiWrapper() as ezpp:
                 ezpp.set_mode(0)  # TODO: other modes
-                for mode in (0, 5, 10):  # vn!std, rx!std, ap!std
+                for mode in (0, 4, 5, 9, 10, 14):  # vn!std, rx!std, ap!std
                     # TODO: this should be using an async generator
                     for row in await score_select_conn.fetch_all(
                         "SELECT id, acc, mods, max_combo, nmiss "
@@ -1287,7 +1287,7 @@ async def recalc(ctx: Context) -> Optional[str]:
 
                     with OppaiWrapper() as ezpp:
                         ezpp.set_mode(0)  # TODO: other modes
-                        for mode in (0, 5, 10):  # vn!std, rx!std, ap!std
+                        for mode in (0, 4, 5, 9, 10, 14):  # vn!std, rx!std, ap!std
                             # TODO: this should be using an async generator
                             for row in await score_select_conn.fetch_all(
                                 "SELECT id, acc, mods, max_combo, nmiss "
