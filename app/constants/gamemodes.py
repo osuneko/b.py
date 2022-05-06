@@ -18,17 +18,17 @@ GAMEMODE_REPR_LIST = (
     "vn!taiko",
     "vn!catch",
     "vn!mania",
+    "vn!cs0",
     "rx!std",
     "rx!taiko",
     "rx!catch",
     "rx!mania",  # unused
+    "rx!cs0",
     "ap!std",
     "ap!taiko",  # unused
     "ap!catch",  # unused
     "ap!mania",  # unused
-    "vn!cs0",
-    "rx!cs0",
-    "ap!cs0",
+    "ap!cs0"
 )
 
 
