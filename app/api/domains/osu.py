@@ -737,6 +737,10 @@ async def osuSubmitModularSelector(
     score.bmap = bmap
     score.player = player
 
+    # cs0 check
+    if bmap.cs == 0:
+        score.mode = score.mode.as_cs0(bmap)
+
     ## perform checksum validation
 
     unique_id1, unique_id2 = unique_ids.split("|", maxsplit=1)
@@ -1437,18 +1441,6 @@ async def getScores(
             mode_arg += 8
 
     mods = Mods(mods_arg)
-    mode = GameMode(mode_arg)
-
-    # attempt to update their stats if their
-    # gm/gm-affecting-mods change at all.
-    if mode != player.status.mode:
-        player.status.mods = mods
-        player.status.mode = mode
-
-        if not player.restricted:
-            app.state.sessions.players.enqueue(app.packets.user_stats(player))
-
-    scoring_metric = "pp" if mode >= GameMode.RELAX_OSU else "score"
 
     bmap = await Beatmap.from_md5(map_md5, set_id=map_set_id)
     has_set_id = map_set_id > 0
@@ -1496,6 +1488,27 @@ async def getScores(
             return b"-1|false"
 
     # we've found a beatmap for the request.
+
+    mode = GameMode(mode_arg)
+
+    # attempt to update their stats if their
+    # gm/gm-affecting-mods change at all.
+    if (m := mode.as_cs0(bmap)):
+        mode = m
+        if mode != player.status.mode:
+            player.status.mode = mode
+            player.status.mods = mods
+            if not player.restricted:
+                app.state.sessions.players.enqueue(app.packets.user_stats(player))
+    else:
+        if mode != player.status.mode:
+            player.status.mode = mode
+            player.status.mods = mods
+            if not player.restricted:
+                app.state.sessions.players.enqueue(app.packets.user_stats(player))
+
+
+    scoring_metric = "pp" if mode >= GameMode.RELAX_OSU else "score"
 
     if app.state.services.datadog:
         app.state.services.datadog.increment("bancho.leaderboards_served")
@@ -2018,6 +2031,9 @@ async def register_account(
                         5,  # rx!taiko
                         6,  # rx!catch
                         8,  # ap!std
+                        12, # vn!cs0
+                        13, # rx!cs0
+                        14, # ap!cs0
                     )
                 ],
             )

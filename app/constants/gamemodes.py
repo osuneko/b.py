@@ -26,6 +26,9 @@ GAMEMODE_REPR_LIST = (
     "ap!taiko",  # unused
     "ap!catch",  # unused
     "ap!mania",  # unused
+    "vn!cs0",
+    "rx!cs0",
+    "ap!cs0",
 )
 
 
@@ -46,6 +49,10 @@ class GameMode(IntEnum):
     AUTOPILOT_TAIKO = 9  # unused
     AUTOPILOT_CATCH = 10  # unused
     AUTOPILOT_MANIA = 11  # unused
+    
+    VANILLA_CS0 = 12
+    RELAX_CS0 = 13
+    AUTOPILOT_CS0 = 14
 
     @classmethod
     @functools.lru_cache(maxsize=32)
@@ -67,6 +74,18 @@ class GameMode(IntEnum):
             return self.value - 4
         else:
             return self.value
+
+    # i don't think we wanna cache this..?
+    def as_cs0(self, bmap: Beatmap) -> int:
+        if bmap.cs == 0:
+            if self.value & self.RELAX_OSU:
+                return self.RELAX_CS0
+            elif self.value & self.AUTOPILOT_OSU:
+                return self.AUTOPILOT_CS0
+            else:
+                return self.VANILLA_CS0
+
+        return None
 
     def __repr__(self) -> str:
         return GAMEMODE_REPR_LIST[self.value]
