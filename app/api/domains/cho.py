@@ -206,7 +206,7 @@ class ChangeAction(BasePacket):
         p.status.map_md5 = self.map_md5
         p.status.mods = Mods(self.mods)
         b = await Beatmap.from_md5(self.map_md5)
-        if b:
+        if b and b.cs == 0:
             p.status.mode = b.mode.as_cs0(b)
         else:
             p.status.mode = GameMode(self.mode)
