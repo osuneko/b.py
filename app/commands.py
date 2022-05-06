@@ -1421,9 +1421,9 @@ async def givedonator(ctx: Context) -> Optional[str]:
         return "Invalid timespan."
     
     await t.give_donator(timespan)
-    t.send_bot(f"You just received the donator status from {ctx.player.name} for {ctx.args[1]}!")
+    t.send_bot(f"You just received the donator status from {ctx.player.name}. It will end {timeago.format(t.donor_end)}!")
 
-    return f"Donator status of {t} will end {timeago.format(timespan)}."
+    return f"Donator status of {t} will end {timeago.format(t.donor_end)}."
 
 
 @command(Privileges.DEVELOPER)

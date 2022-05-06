@@ -567,9 +567,9 @@ class Player:
         await self.add_privs(Privileges.DONATOR)
         
         if self.donor_end > time.time():
-            _time += time.time()
-        else:
             _time += self.donor_end
+        else:
+            _time += time.time()
 
         await app.state.services.database.execute(
             "UPDATE users SET donor_end = :end "
