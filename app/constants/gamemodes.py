@@ -26,9 +26,9 @@ GAMEMODE_REPR_LIST = (
     "ap!taiko",  # unused
     "ap!catch",  # unused
     "ap!mania",  # unused
-    "vn!std", # cs0
-    "rx!std", # cs0
-    "ap!std", # cs0
+    "vn!cs0",
+    "rx!cs0",
+    "ap!cs0",
 )
 
 
