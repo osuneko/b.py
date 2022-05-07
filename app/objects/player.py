@@ -564,7 +564,7 @@ class Player:
             
     async def give_donator(self, _time: int) -> None:
         """Gives `self` donator for `_time`."""
-        await self.add_privs(Privileges.DONATOR)
+        await self.add_privs(Privileges.SUPPORTER)
         
         if self.donor_end > time.time():
             _time += self.donor_end
