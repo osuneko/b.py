@@ -329,7 +329,7 @@ async def maplink(ctx: Context) -> Optional[str]:
     return f"[{app.settings.MIRROR_URL}/d/{bmap.set_id} {bmap.full_name}]"
 
 
-@command(Privileges.NORMAL, aliases=["last", "r"])
+@command(Privileges.DONATOR, aliases=["last", "r"])
 async def recent(ctx: Context) -> Optional[str]:
     """Show information about a player's most recent score."""
     if ctx.args:
@@ -371,7 +371,7 @@ TOP_SCORE_FMTSTR = (
 )
 
 
-@command(Privileges.NORMAL, hidden=True)
+@command(Privileges.DONATOR, hidden=True)
 async def top(ctx: Context) -> Optional[str]:
     """Show information about a player's top 10 scores."""
     # !top <mode> (player)
@@ -927,7 +927,7 @@ async def user(ctx: Context) -> Optional[str]:
     )
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.MODERATOR, hidden=True)
 async def restrict(ctx: Context) -> Optional[str]:
     """Restrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -953,7 +953,7 @@ async def restrict(ctx: Context) -> Optional[str]:
     return f"{t} was restricted."
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.MODERATOR, hidden=True)
 async def unrestrict(ctx: Context) -> Optional[str]:
     """Unrestrict a specified player's account, with a reason."""
     if len(ctx.args) < 2:
@@ -1009,7 +1009,7 @@ async def alertuser(ctx: Context) -> Optional[str]:
 # NOTE: this is pretty useless since it doesn't switch anything other
 # than the c[e4].ppy.sh domains; it exists on bancho as a tournament
 # server switch mechanism, perhaps we could leverage this in the future.
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.DEVELOPER, hidden=True)
 async def switchserv(ctx: Context) -> Optional[str]:
     """Switch your client's internal endpoints to a specified IP address."""
     if len(ctx.args) != 1:
@@ -1021,7 +1021,7 @@ async def switchserv(ctx: Context) -> Optional[str]:
     return "Have a nice journey.."
 
 
-@command(Privileges.ADMINISTRATOR, aliases=["restart"])
+@command(Privileges.DEVELOPER, aliases=["restart"])
 async def shutdown(ctx: Context) -> Optional[str]:
     """Gracefully shutdown the server."""
     if ctx.trigger == "restart":
@@ -1348,7 +1348,7 @@ str_priv_dict = {
 }
 
 
-@command(Privileges.ADMINISTRATOR, hidden=True)
+@command(Privileges.DEVELOPER, hidden=True)
 async def addpriv(ctx: Context) -> Optional[str]:
     """Set privileges for a specified player (by name)."""
     if len(ctx.args) < 2:
@@ -2535,7 +2535,7 @@ async def clan_help(ctx: Context) -> Optional[str]:
     return "\n".join(cmds)
 
 
-@clan_commands.add(Privileges.NORMAL, aliases=["c"])
+@clan_commands.add(Privileges.DONATOR, aliases=["c"])
 async def clan_create(ctx: Context) -> Optional[str]:
     """Create a clan with a given tag & name."""
     if len(ctx.args) < 2:
