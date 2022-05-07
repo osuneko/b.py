@@ -1426,6 +1426,18 @@ async def givedonator(ctx: Context) -> Optional[str]:
     return f"Donator status of {t} will end {timeago.format(t.donor_end)}."
 
 
+@command(Privileges.NORMAL)
+async def vote(ctx: Context) -> Optional[str]:
+    """Gives status about your vote progress and the vote link."""
+    if app.settings.VOTE_LINK == "":
+        return "This server does not have a voting page."
+
+    row = await app.state.services.database.fetch_one("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": ctx.player.id})
+    votes = row["donator_votes"]
+
+    return f"Vote {app.settings.VOTES_FOR_DONATOR - (votes % 10)} more times to receive one free week of donator status! ({votes % 10}/{app.settings.VOTES_FOR_DONATOR})\nClick (here)[{app.settings.VOTE_LINK}-{ctx.player.name}] to get to the voting page. You've voted {votes} times in total!"
+
+
 @command(Privileges.DEVELOPER)
 async def wipemap(ctx: Context) -> Optional[str]:
     # (intentionally no docstring)

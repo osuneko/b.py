@@ -142,7 +142,7 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
 
     votes = (await app.state.services.database.fetch_val("SELECT donator_votes FROM users WHERE id = :user_id", {"user_id": t.id})) + 1
 
-    t.send_bot(f"~~~~~~~~~~~~~~~\nThank you for voting! ({votes}/10)\nVote {app.settings.VOTES_FOR_DONATOR} times to receive a free week of donator status! You can vote once per 12 hours.")
+    t.send_bot(f"~~~~~~~~~~~~~~~\nThank you for voting! ({votes}/{app.settings.VOTES_FOR_DONATOR})\nVote {app.settings.VOTES_FOR_DONATOR} times to receive a free week of donator status! You can vote once per 12 hours.")
     if votes % app.settings.VOTES_FOR_DONATOR == 0:
         log(f"{t} received 1 week of donator through voting", Ansi.LCYAN)
         await t.give_donator(604800)
