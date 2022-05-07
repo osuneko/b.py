@@ -749,8 +749,7 @@ ACTION_STRINGS = {
     "unrestrict": "Unrestricted for",
     "silence": "Silenced for",
     "unsilence": "Unsilenced for",
-    "note": "Note added:",
-    "give_donator": "Gave donator for",
+    "note": "Note added:"
 }
 
 
