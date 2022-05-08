@@ -579,6 +579,8 @@ async def request(ctx: Context) -> Optional[str]:
     if ctx.args:
         return "Invalid syntax: !request"
 
+    return "Requests are currently disabled."
+
     if time.time() >= ctx.player.last_np["timeout"]:
         return "Please /np a map first!"
 

@@ -870,7 +870,7 @@ def user_stats(p: Player) -> bytes:
         (p.status.info_text, osuTypes.string),
         (p.status.map_md5, osuTypes.string),
         (p.status.mods, osuTypes.i32),
-        (p.status.mode.as_vanilla, osuTypes.u8),
+        (p.status.mode.as_vanilla_nocs0, osuTypes.u8),
         (p.status.map_id, osuTypes.i32),
         (rscore, osuTypes.i64),
         (gm_stats.acc / 100.0, osuTypes.f32),

@@ -74,6 +74,12 @@ class GameMode(IntEnum):
         else:
             return self.value
 
+    @property
+    def as_vanilla_nocs0(self) -> int:
+        if self.value in (4, 9, 14):
+            return 0
+        return self.as_vanilla
+
     # i don't think we wanna cache this..?
     def as_cs0(self, bmap: Beatmap) -> int:
         if bmap.cs == 0:
