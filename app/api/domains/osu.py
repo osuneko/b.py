@@ -112,16 +112,6 @@ def authenticate_player_session(
     return wrapper
 
 
-""" /web/ handlers """
-
-# TODO
-# POST /web/osu-session.php
-# POST /web/osu-osz2-bmsubmit-post.php
-# POST /web/osu-osz2-bmsubmit-upload.php
-# GET /web/osu-osz2-bmsubmit-getid.php
-# GET /web/osu-get-beatmap-topic.php
-
-
 @router.get("/topg_callback")
 async def topgCallback(p_resp: str, ip: str, request: Request):
     ip = app.state.services.ip_resolver.get_ip(request.headers)
@@ -190,6 +180,16 @@ async def discordOAuthCallback(code: str, state: str):
         url=f"/verification_successful?name={name}&id={discord_id}&avatar={avatar_id}",
         status_code=status.HTTP_307_TEMPORARY_REDIRECT
     )
+
+
+""" /web/ handlers """
+
+# TODO
+# POST /web/osu-session.php
+# POST /web/osu-osz2-bmsubmit-post.php
+# POST /web/osu-osz2-bmsubmit-upload.php
+# GET /web/osu-osz2-bmsubmit-getid.php
+# GET /web/osu-get-beatmap-topic.php
 
 
 @router.post("/web/osu-error.php")
@@ -505,6 +505,7 @@ async def osuSearchHandler(
     mode: int = Query(..., alias="m", ge=-1, le=4),  # -1 for all
     page_num: int = Query(..., alias="p"),
 ):
+    print("t")
     if USING_CHIMU:
         search_url = f"{app.settings.MIRROR_URL}/search"
     else:
