@@ -40,7 +40,6 @@ from app.constants.privileges import Privileges
 from app.logging import Ansi
 from app.logging import log
 from app.logging import magnitude_fmt_time
-from app.oauth import DiscordOAuth
 from app.objects.beatmap import Beatmap
 from app.objects.beatmap import ensure_local_osu_file
 from app.objects.channel import Channel
@@ -367,20 +366,9 @@ class StatsUpdateRequest(BasePacket):
 # TODO: these should probably be moved to the config.
 WELCOME_MSG = "\n".join(
     (
-        "~~~~~ Welcome to cs0su! ~~~~~",
+        "~~~~~ Welcome to Nekosu! ~~~~~",
         "If you need help around commands, use the command !help.",
-        f"Also make sure to join our $DISCORD!",
-        "",
-        "Enjoy your stay and have fun!",
-    ),
-)
-WELCOME_MSG_OAUTH = "\n".join(
-    (
-        "~~~~~ Welcome to cs0su! ~~~~~",
-        "If you need help around commands, use the command !help.",
-        f"Also make sure to join our $DISCORD!",
-        "NOTE: To submit scores on our server, we require you to link your Discord",
-        "account to our server. You can do that by clicking (here)[$OAUTH].",
+        "Also make sure to join our {}!",
         "",
         "Enjoy your stay and have fun!",
     ),
@@ -393,7 +381,7 @@ RESTRICTED_MSG = (
 )
 
 WELCOME_NOTIFICATION = app.packets.notification(
-    f"Welcome on cs0su!\n\nMake sure to join our Discord if you haven't yet to receive all kinds of updates around the server!\n\nEnjoy your stay!",
+    f"Welcome to Nekosu!\n\nEnjoy your stay!",
 )
 
 OFFLINE_NOTIFICATION = app.packets.notification(
@@ -855,34 +843,26 @@ async def login(
                     sender_id=msg["from_id"],
                 )
 
-        if app.settings.DISCORD_OAUTH_ENABLED and not p.priv & Privileges.VERIFIED:
-            data += app.packets.send_message(
-                sender=app.state.sessions.bot.name,
-                msg=WELCOME_MSG_OAUTH.replace("$OAUTH", DiscordOAuth.get_link(p.id)).replace("$DISCORD", f"(Discord)[{app.settings.DISCORD_INVITE}]" if app.settings.DISCORD_INVITE != "" else "Discord"),
-                recipient=p.name,
-                sender_id=app.state.sessions.bot.id
-            )
-        else:
-            if not p.priv & Privileges.VERIFIED:
-                # this is the player's first login, verify their
-                # account & send info about the server/its usage.
-                await p.add_privs(Privileges.VERIFIED)
+        if not p.priv & Privileges.VERIFIED:
+            # this is the player's first login, verify their
+            # account & send info about the server/its usage.
+            await p.add_privs(Privileges.VERIFIED)
 
-                if p.id == 3:
-                    # this is the first player registering on
-                    # the server, grant them full privileges.
-                    await p.add_privs(
-                        Privileges.STAFF
-                        | Privileges.NOMINATOR
-                        | Privileges.WHITELISTED
-                        | Privileges.TOURNAMENT
-                        | Privileges.DONATOR
-                        | Privileges.ALUMNI,
-                    )
+            if p.id == 3:
+                # this is the first player registering on
+                # the server, grant them full privileges.
+                await p.add_privs(
+                    Privileges.STAFF
+                    | Privileges.NOMINATOR
+                    | Privileges.WHITELISTED
+                    | Privileges.TOURNAMENT
+                    | Privileges.DONATOR
+                    | Privileges.ALUMNI,
+                )
 
                 data += app.packets.send_message(
                     sender=app.state.sessions.bot.name,
-                    msg=WELCOME_MSG.replace("$DISCORD", f"(Discord)[{app.settings.DISCORD_INVITE}]" if app.settings.DISCORD_INVITE != "" else "Discord"),
+                    msg=WELCOME_MSG.format(f"(Discord)[{app.settings.DISCORD_INVITE}]"),
                     recipient=p.name,
                     sender_id=app.state.sessions.bot.id
                 )
@@ -932,7 +912,11 @@ async def login(
     p.update_latest_activity_soon()
 
     if(random.randint(0, 4) == 0):
-        p.send_bot("Dont forget to vote for us if you haven't already, we would greatly appreciate it!\nYou can vote every 12 hours and after 10 votes you get a free week of donator status.\nUse the !vote command to get more informations.")
+        p.send_bot("Dont forget to vote for us if you haven't already! Voting for us is the best way you can support our work <3")
+
+    if(random.randint(0, 100) == 0):
+        p.send_bot("Your account is currently restricted! If you believe this that is a mistake, please join our Discord server in order to appeal.")
+
 
     return {"osu_token": p.token, "response_body": bytes(data)}
 

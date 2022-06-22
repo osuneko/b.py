@@ -382,10 +382,6 @@ def ensure_local_services_are_running() -> int:
                 log("Unable to connect to mysql server.", Ansi.LRED)
                 return 1
 
-    if not os.path.exists("/var/run/redis/redis-server.pid"):
-        log("Unable to connect to redis server.", Ansi.LRED)
-        return 1
-
     return 0
 
 

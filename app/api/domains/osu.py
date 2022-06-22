@@ -58,7 +58,6 @@ from app.constants.mods import Mods
 from app.logging import Ansi
 from app.logging import log
 from app.logging import printc
-from app.oauth import DiscordOAuth
 from app.objects import models
 from app.objects.beatmap import Beatmap
 from app.objects.beatmap import ensure_local_osu_file
@@ -144,43 +143,6 @@ async def topgCallback(p_resp: str, ip: str, request: Request):
     )
 
     return Response(status_code=status.HTTP_200_OK)
-
-
-@router.get("/discord_oauth_callback")
-async def discordOAuthCallback(code: str, state: str):
-    if not app.settings.DISCORD_OAUTH_ENABLED:
-        return RedirectResponse(
-                url=f"/verification_failed?error=Discord OAuth is disabled.",
-                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-            )
-
-    errorcode, name, discord_id, avatar_id = await DiscordOAuth.verify_user(code, state)
-    if errorcode == 1:
-        return RedirectResponse(
-                url=f"/verification_failed?error=Invalid session ID provided.",
-                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-            )
-    elif errorcode == 2:
-        return RedirectResponse(
-                url=f"/verification_failed?error=Invalid OAuth code.",
-                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-            )
-    elif errorcode == 3:
-        return RedirectResponse(
-                url=f"/verification_failed?error=Discord API call failed.",
-                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-            )
-    elif errorcode == 4:
-        return RedirectResponse(
-                url=f"/verification_failed?error=Your discord account is already linked to an account. Creating multiple accounts is not allowed!",
-                status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-            )
-
-    return RedirectResponse(
-        url=f"/verification_successful?name={name}&id={discord_id}&avatar={avatar_id}",
-        status_code=status.HTTP_307_TEMPORARY_REDIRECT
-    )
-
 
 """ /web/ handlers """
 
@@ -738,10 +700,6 @@ async def osuSubmitModularSelector(
     score.bmap = bmap
     score.player = player
 
-    # cs0 check
-    if bmap.cs == 0:
-        score.mode = score.mode.as_cs0(bmap)
-
     ## perform checksum validation
 
     unique_id1, unique_id2 = unique_ids.split("|", maxsplit=1)
@@ -815,13 +773,6 @@ async def osuSubmitModularSelector(
     # what the result of the score submission is.
     score.player.update_latest_activity_soon()
 
-    # If the user is not verified using discord yet,
-    # ignore submitted scores
-    if not score.player.priv & Privileges.VERIFIED:
-        if score.status == SubmissionStatus.SUBMITTED or score.status == SubmissionStatus.BEST:
-            score.player.send_bot(f"Your score cannot be submitted because your account is not verified yet! Click (here)[{DiscordOAuth.get_link(score.player.id)}] to link your account with Discord.")
-        return b"error: no"
-
     # attempt to update their stats if their
     # gm/gm-affecting-mods change at all.
     if score.mode != score.player.status.mode:
@@ -860,6 +811,12 @@ async def osuSubmitModularSelector(
             )
         """
 
+    if round(score.pp) == 727 and not score.player.restricted:
+        await score.player.restrict(
+            admin = app.state.sessions.bot,
+            reason = "blue"
+        )
+
     """ Score submission checks completed; submit the score. """
 
     if app.state.services.datadog:
@@ -885,7 +842,7 @@ async def osuSubmitModularSelector(
             #    ),
             #)
 
-            if score.bmap.status == RankedStatus.Ranked or score.bmap.status == RankedStatus.Approved or score.bmap.status == RankedStatus.Qualified:
+            if score.bmap.awards_ranked_pp:
                 score.player.send_bot(f"[{score.mode!r}] You just got {performance} on {score.bmap.embed} +{score.mods!r}")
                 #misses = f"{score.nmiss}X"
                 #if score.perfect:
@@ -1494,22 +1451,14 @@ async def getScores(
 
     # attempt to update their stats if their
     # gm/gm-affecting-mods change at all.
-    if (m := mode.as_cs0(bmap)):
-        mode = m
-        if mode != player.status.mode:
-            player.status.mode = mode
-            player.status.mods = mods
-            if not player.restricted:
-                app.state.sessions.players.enqueue(app.packets.user_stats(player))
-    else:
-        if mode != player.status.mode:
-            player.status.mode = mode
-            player.status.mods = mods
-            if not player.restricted:
-                app.state.sessions.players.enqueue(app.packets.user_stats(player))
+    if mode != player.status.mode:
+        player.status.mode = mode
+        player.status.mods = mods
+        if not player.restricted:
+            app.state.sessions.players.enqueue(app.packets.user_stats(player))
 
 
-    scoring_metric = "pp" if mode >= GameMode.RELAX_OSU else "score"
+    scoring_metric = "pp" if mode >= GameMode.RELAX_OSU else "score"    
 
     if app.state.services.datadog:
         app.state.services.datadog.increment("bancho.leaderboards_served")

@@ -15,7 +15,7 @@ import traceback
 import uuid
 from collections import Counter
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from pathlib import Path
 from time import perf_counter_ns as clock_ns
@@ -34,7 +34,6 @@ from pytimeparse.timeparse import timeparse
 
 import psutil
 import timeago
-from pytimeparse.timeparse import timeparse
 
 import app.logging
 import app.packets
@@ -198,16 +197,7 @@ async def _help(ctx: Context) -> Optional[str]:
 @command(Privileges.NORMAL)
 async def roll(ctx: Context) -> Optional[str]:
     """Roll an n-sided die where n is the number you write (100 default)."""
-    if ctx.args and ctx.args[0].isdecimal():
-        max_roll = min(int(ctx.args[0]), 0x7FFF)
-    else:
-        max_roll = 100
-
-    if max_roll == 0:
-        return "Roll what?"
-
-    points = random.randrange(0, max_roll)
-    return f"{ctx.player.name} rolls {points} points!"
+    return f"{ctx.player.name} rolls 727 points!"
 
 
 @command(Privileges.NORMAL, hidden=True)
@@ -269,10 +259,11 @@ async def reconnect(ctx: Context) -> Optional[str]:
     return None
 
 
-@command(Privileges.DONATOR)
+@command(Privileges.NORMAL)
 async def changename(ctx: Context) -> Optional[str]:
     """Change your username."""
     name = " ".join(ctx.args).strip()
+    ts = datetime.fromtimestamp(ctx.player.last_userchange) + timedelta(weeks=1)
 
     if not regexes.USERNAME.match(name):
         return "Must be 2-15 characters in length."
@@ -282,6 +273,10 @@ async def changename(ctx: Context) -> Optional[str]:
 
     if name in app.settings.DISALLOWED_NAMES:
         return "Disallowed username; pick another."
+
+    if time.mktime(ts.timetuple()) > time.time():
+        fromts = datetime.fromtimestamp(ctx.player.last_userchange)
+        return f"You are currently on cooldown! Your cooldown expires {timeago.format(fromts)}."
 
     safe_name = make_safe_name(name)
 
@@ -293,10 +288,11 @@ async def changename(ctx: Context) -> Optional[str]:
 
     # all checks passed, update their name
     await app.state.services.database.execute(
-        "UPDATE users SET name = :name, safe_name = :safe_name WHERE id = :user_id",
+        "UPDATE users SET name = :name, safe_name = :safe_name, last_userchange = NOW() WHERE id = :user_id",
         {"name": name, "safe_name": safe_name, "user_id": ctx.player.id},
     )
 
+    ctx.player.last_userchange = time.time()
     ctx.player.enqueue(
         app.packets.notification(f"Your username has been changed to {name}!"),
     )

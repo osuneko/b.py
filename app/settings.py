@@ -19,10 +19,6 @@ REDIS_DSN: str = config("REDIS_DSN")
 
 OSU_API_KEY: Secret = config("OSU_API_KEY", cast=Secret)
 
-DISCORD_CLIENT_ID: str = config("DISCORD_CLIENT_ID", default="")
-DISCORD_CLIENT_SECRET: str = config("DISCORD_CLIENT_SECRET", default="")
-DISCORD_OAUTH_ENABLED: bool = config("DISCORD_OAUTH_ENABLED", default=False)
-
 DOMAIN: str = config("DOMAIN", default="cmyui.xyz")
 MIRROR_URL: str = config("MIRROR_URL", default="https://api.chimu.moe/v1")
 DISCORD_INVITE: str = config("DISCORD_INVITE", default="")
