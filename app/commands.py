@@ -275,8 +275,7 @@ async def changename(ctx: Context) -> Optional[str]:
         return "Disallowed username; pick another."
 
     if time.mktime(ts.timetuple()) > time.time():
-        fromts = datetime.fromtimestamp(ctx.player.last_userchange)
-        return f"You are currently on cooldown! Your cooldown expires {timeago.format(fromts)}."
+        return f"You are currently on cooldown! Your cooldown expires {timeago.format(ts)}."
 
     safe_name = make_safe_name(name)
 
